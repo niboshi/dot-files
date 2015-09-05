@@ -34,6 +34,11 @@
 (set-background-color "black")
 (set-foreground-color "#cccccc")
 
+; Transparency
+; '(active inactive)
+(set-frame-parameter (selected-frame) 'alpha '(97 95))
+(add-to-list 'default-frame-alist '(alpha 97 95))
+
 ;
 (setq make-backup-files nil)
 (setq default-truncate-lines t)
@@ -69,6 +74,14 @@
               (progn
                 (load-file (concat base-dir "/" file)))
             )))))
+
+;-----------------------
+; eval hotkeys
+;-----------------------
+(global-set-key (kbd "C-c e e") 'eval-expression)
+(global-set-key (kbd "C-c e r") 'eval-region)
+(global-set-key (kbd "C-c e b") 'eval-buffer)
+
 
 ;-----------------------
 ; Open explorer
@@ -123,6 +136,8 @@
 
       (set-face-attribute 'whitespace-tab nil :background nil :foreground "#333333")
       (set-face-attribute 'whitespace-newline nil :background nil :foreground "#333333")
+      (set-face-attribute 'whitespace-empty nil :background "#200000" :foreground nil)
+      (set-face-attribute 'whitespace-trailing nil :background "#200000" :foreground nil)
       )
 
   (progn
