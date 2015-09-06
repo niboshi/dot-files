@@ -41,6 +41,7 @@
 
 ;
 (setq make-backup-files nil)
+(setq create-lockfiles nil)
 (setq default-truncate-lines t)
 (global-linum-mode 1)
 (setq-default indent-tabs-mode nil)
@@ -145,6 +146,16 @@
     (global-set-key "\C-c=w" 'ignore)
     ))
 
+
+;-----------------------
+; visible-bell
+;-----------------------
+ (defun niboshi-ring-bell-function ()
+   (invert-face 'mode-line)
+   (run-with-timer 0.1 nil 'invert-face 'mode-line))
+ 
+ (setq visible-bell nil
+       ring-bell-function 'niboshi-ring-bell-function)
 
 ;-----------------------
 ; incremental search
