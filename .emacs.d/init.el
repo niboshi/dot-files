@@ -9,7 +9,8 @@
 ; Disable original features
 ;-----------------------
 ; Disable Contrl-Z to suspend
-(global-unset-key (kbd "C-z"))
+(if (display-graphic-p)
+  (global-unset-key (kbd "C-z")))
 (global-unset-key (kbd "C-c C-z"))
 
 ; Disable ALT-key hook, to re-enable Windows system menu
@@ -26,8 +27,11 @@
 
 ;-----------------------
 ; UI
-(setq inhibit-splash-screen t)
-(tool-bar-mode -1)
+(if (display-graphic-p)
+    (progn
+      (setq inhibit-splash-screen t)
+      (tool-bar-mode -1)
+      ))
 (menu-bar-mode -1)
 
 ; Colors
@@ -36,14 +40,22 @@
 
 ; Transparency
 ; '(active inactive)
-(set-frame-parameter (selected-frame) 'alpha '(97 95))
-(add-to-list 'default-frame-alist '(alpha 97 95))
+(if (display-graphic-p)
+  (progn
+    (set-frame-parameter (selected-frame) 'alpha '(97 95))
+    (add-to-list 'default-frame-alist '(alpha 97 95))
+))
 
 ;
 (setq make-backup-files nil)
 (setq create-lockfiles nil)
 (setq default-truncate-lines t)
 (global-linum-mode 1)
+(unless (display-graphic-p)
+  (progn
+    (setq linum-format "%d ")
+    ))
+(set-face-attribute 'linum nil :background nil :foreground "#666666")
 (setq-default indent-tabs-mode nil)
 
 (add-hook 'c-mode-common-hook
