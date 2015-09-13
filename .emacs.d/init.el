@@ -66,6 +66,15 @@
 (global-set-key (kbd "C-c p") (lambda () (interactive) (message buffer-file-name)))
 
 ;-----------------------
+; Scroll
+;-----------------------
+(unless (display-graphic-p)
+  (xterm-mouse-mode t))
+(setq mouse-wheel-scroll-amount '(1 ((shift) . 1) ((control) . nil)))
+(setq mouse-wheel-progressive-speed nil)
+(setq mouse-wheel-follow-mouse 't)
+
+;-----------------------
 ; MELPA
 ;-----------------------
 (when (>= emacs-major-version 24)
@@ -147,11 +156,18 @@
       ;(setq whitespace-style '(spaces tabs newline space-mark tab-mark newline-mark))
       (global-set-key "\C-c=w" 'global-whitespace-mode)
 
-      (set-face-attribute 'whitespace-tab nil :background nil :foreground "#333333")
-      (set-face-attribute 'whitespace-newline nil :background nil :foreground "#333333")
-      (set-face-attribute 'whitespace-empty nil :background "#200000" :foreground nil)
-      (set-face-attribute 'whitespace-trailing nil :background "#200000" :foreground nil)
-      )
+      (if (display-graphic-p)
+          (progn
+            (set-face-attribute 'whitespace-tab nil :background nil :foreground "#333333")
+            (set-face-attribute 'whitespace-newline nil :background nil :foreground "#333333")
+            (set-face-attribute 'whitespace-empty nil :background "#200000" :foreground nil)
+            (set-face-attribute 'whitespace-trailing nil :background "#200000" :foreground nil))
+        (progn
+          (set-face-attribute 'whitespace-tab nil :background nil :foreground "brightblack")
+          (set-face-attribute 'whitespace-newline nil :background nil :foreground "brightblack")
+          (set-face-attribute 'whitespace-empty nil :background "red" :foreground nil)
+          (set-face-attribute 'whitespace-trailing nil :background "red" :foreground nil)
+          )))
 
   (progn
     (message "Whitespace is unavailable.")
@@ -194,6 +210,14 @@
       (global-set-key (kbd "C-c g e") 'ggtags-find-tag-regexp)
       (global-set-key (kbd "C-c g f") 'ggtags-find-file)
       ))
+
+;-----------------------
+; diff
+;-----------------------
+(custom-set-faces
+ '(diff-added ((t (:foreground "green"))) 'now)
+ '(diff-removed ((t (:foreground "red"))) 'now)
+ )
 
 
 ;-----------------------
