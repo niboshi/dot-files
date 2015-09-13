@@ -51,11 +51,14 @@
 (setq create-lockfiles nil)
 (setq default-truncate-lines t)
 (global-linum-mode 1)
-(unless (display-graphic-p)
+(if (display-graphic-p)
+    (progn
+      (set-face-attribute 'linum nil :background nil :foreground "#444444")
+      )
   (progn
     (setq linum-format "%d ")
+    (set-face-attribute 'linum nil :background nil :foreground "brightblack")
     ))
-(set-face-attribute 'linum nil :background nil :foreground "brightblack")
 (setq-default indent-tabs-mode nil)
 
 (add-hook 'c-mode-common-hook
