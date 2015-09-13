@@ -55,7 +55,7 @@
   (progn
     (setq linum-format "%d ")
     ))
-(set-face-attribute 'linum nil :background nil :foreground "#666666")
+(set-face-attribute 'linum nil :background nil :foreground "brightblack")
 (setq-default indent-tabs-mode nil)
 
 (add-hook 'c-mode-common-hook
