@@ -24,6 +24,8 @@
 ;-----------------------
 (global-set-key (kbd "C-l") 'goto-line)
 (define-key key-translation-map (kbd "C-h") "\C-?")
+(if (fboundp 'bs-show)
+    (global-set-key (kbd "C-x C-b") 'bs-show))
 
 ;-----------------------
 ; UI
@@ -38,6 +40,9 @@
 (set-background-color "black")
 (set-foreground-color "#cccccc")
 
+(if (display-graphic-p)
+    (global-hl-line-mode 1))
+
 ; Transparency
 ; '(active inactive)
 (if (display-graphic-p)
@@ -48,6 +53,7 @@
 
 ;
 (setq make-backup-files nil)
+(setq auto-save-default nil)
 (setq create-lockfiles nil)
 (setq default-truncate-lines t)
 (global-linum-mode 1)
@@ -63,10 +69,15 @@
 
 (add-hook 'c-mode-common-hook
           (progn
+            (c-set-offset 'arglist-intro '+)
             (setq tab-width 4)
             (setq indent-tabs-mode t)))
 
-(global-set-key (kbd "C-c p") (lambda () (interactive) (message buffer-file-name)))
+(global-set-key (kbd "C-c p")
+ (lambda () (interactive)
+   (progn
+     (kill-new buffer-file-name)
+     (message buffer-file-name))))
 
 ;-----------------------
 ; Scroll
@@ -213,6 +224,20 @@
       (global-set-key (kbd "C-c g e") 'ggtags-find-tag-regexp)
       (global-set-key (kbd "C-c g f") 'ggtags-find-file)
       ))
+
+;-----------------------
+; compilation
+;-----------------------
+(global-set-key (kbd "C-c c c") 'compile)
+(global-set-key (kbd "C-c c n") 'compilation-next-error)
+(global-set-key (kbd "C-c c p") 'compilation-previous-error)
+(add-hook 'compilation-mode-hook
+          (lambda () 
+            (progn
+              (linum-mode 0)
+              (setq compilation-scroll-output 'first-error)
+              (setq complation-auto-jump-to-first-error t)
+              )))
 
 ;-----------------------
 ; diff
