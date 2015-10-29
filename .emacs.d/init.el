@@ -68,10 +68,12 @@
 (setq-default indent-tabs-mode nil)
 
 (add-hook 'c-mode-common-hook
-          (progn
-            (c-set-offset 'arglist-intro '+)
-            (setq tab-width 4)
-            (setq indent-tabs-mode t)))
+          '(lambda()
+             (progn
+               (setq tab-width 4)
+               (setq c-basic-offset tab-width)
+               (c-set-offset 'arglist-intro '++)
+               (setq indent-tabs-mode t))))
 
 (global-set-key (kbd "C-c p")
  (lambda () (interactive)
