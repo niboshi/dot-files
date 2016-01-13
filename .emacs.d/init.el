@@ -19,6 +19,33 @@
 ; Disable IME hotkey
 (global-set-key (kbd "C-\\") 'ignore)
 
+; Disable mouse commands
+(global-set-key [down-mouse-2] 'ignore)
+(global-set-key [mouse-2] 'ignore)
+(global-set-key [down-mouse-3] 'ignore)
+(global-set-key [mouse-3] 'ignore)
+
+(global-set-key [S-down-mouse-1] 'ignore)
+(global-set-key [S-mouse-1] 'ignore)
+(global-set-key [S-down-mouse-2] 'ignore)
+(global-set-key [S-mouse-2] 'ignore)
+(global-set-key [S-down-mouse-3] 'ignore)
+(global-set-key [S-mouse-3] 'ignore)
+
+(global-set-key [C-down-mouse-1] 'ignore)
+(global-set-key [C-mouse-1] 'ignore)
+(global-set-key [C-down-mouse-2] 'ignore)
+(global-set-key [C-mouse-2] 'ignore)
+(global-set-key [C-down-mouse-3] 'ignore)
+(global-set-key [C-mouse-3] 'ignore)
+
+(global-set-key [M-down-mouse-1] 'ignore)
+(global-set-key [M-mouse-1] 'ignore)
+(global-set-key [M-down-mouse-2] 'ignore)
+(global-set-key [M-mouse-2] 'ignore)
+(global-set-key [M-down-mouse-3] 'ignore)
+(global-set-key [M-mouse-3] 'ignore)
+
 ;-----------------------
 ; Essential keybinding
 ;-----------------------
@@ -101,6 +128,13 @@
    t)
   (package-initialize))
 
+(defun niboshi-setup()
+  (interactive )
+  (progn
+    (package-install 'ggtags)
+    (package-install 'replace+)
+    ))
+
 ;-----------------------
 ; Load init scripts
 ;-----------------------
@@ -120,6 +154,10 @@
 (global-set-key (kbd "C-c e r") 'eval-region)
 (global-set-key (kbd "C-c e b") 'eval-buffer)
 
+;-----------------------
+; Encoding
+;-----------------------
+(prefer-coding-system 'utf-8)
 
 ;-----------------------
 ; Open explorer
@@ -157,8 +195,8 @@
 ;-----------------------
 (require 'recentf)
 (recentf-mode 1)
-(setq recentf-max-saved-items 100)
-(setq recentf-max-menu-items 100)
+(setq recentf-max-saved-items 1000)
+(setq recentf-max-menu-items 1000)
 (global-set-key (kbd "C-x C-r") 'recentf-open-files)
 
 ;-----------------------
@@ -225,6 +263,7 @@
       (global-set-key (kbd "C-c g g") 'ggtags-find-tag-dwim)
       (global-set-key (kbd "C-c g e") 'ggtags-find-tag-regexp)
       (global-set-key (kbd "C-c g f") 'ggtags-find-file)
+      (global-set-key (kbd "C-c g u") 'ggtags-update-tags)
       ))
 
 ;-----------------------
