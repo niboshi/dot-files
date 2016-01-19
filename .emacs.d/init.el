@@ -49,10 +49,23 @@
 ;-----------------------
 ; Essential keybinding
 ;-----------------------
+; goto-line
 (global-set-key (kbd "C-l") 'goto-line)
+
+;
 (define-key key-translation-map (kbd "C-h") "\C-?")
+
+; bs-show
 (if (fboundp 'bs-show)
     (global-set-key (kbd "C-x C-b") 'bs-show))
+
+; Kill a word
+(global-set-key (kbd "M-h") 'backward-kill-word)
+
+; Scroll without moving cursor
+(global-set-key (kbd "M-p") '(lambda () (interactive) (scroll-down-command 1)))
+(global-set-key (kbd "M-n") '(lambda () (interactive) (scroll-up-command 1)))
+
 
 ;-----------------------
 ; UI
@@ -96,11 +109,18 @@
 
 (add-hook 'c-mode-common-hook
           '(lambda()
-             (progn
-               (setq tab-width 4)
-               (setq c-basic-offset tab-width)
-               (c-set-offset 'arglist-intro '++)
-               (setq indent-tabs-mode t))))
+             (setq tab-width 4)
+             (setq c-basic-offset tab-width)
+             (c-set-offset 'arglist-intro '++)
+             (setq indent-tabs-mode t)
+             (if (fboundp 'whitespace-mode) (whitespace-mode t))))
+
+(add-hook 'python-mode-hook
+          '(lambda ()
+             (setq indent-tabs-mode t)
+             (setq tab-width 4)
+             (setq python-indent 4)
+             (if (fboundp 'whitespace-mode) (whitespace-mode t))))
 
 (global-set-key (kbd "C-c p")
  (lambda () (interactive)
@@ -208,7 +228,7 @@
 
       (setq whitespace-style '(empty face tabs newline tab-mark newline-mark))
       ;(setq whitespace-style '(spaces tabs newline space-mark tab-mark newline-mark))
-      (global-set-key "\C-c=w" 'global-whitespace-mode)
+      (global-set-key "\C-c=w" 'whitespace-mode)
 
       (if (display-graphic-p)
           (progn
