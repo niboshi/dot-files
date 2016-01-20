@@ -1,0 +1,14 @@
+#!/usr/bin/python
+
+import sys
+if len(sys.argv) <= 1:
+	exit(1)
+
+chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890'
+#chars = '0123456789'
+
+import random
+n = int(sys.argv[1])
+str = ''.join(random.choice(chars) for _ in range(n))
+print str
+
