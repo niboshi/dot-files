@@ -126,6 +126,7 @@
              (setq c-basic-offset tab-width)
              (c-set-offset 'arglist-intro '++)
              (setq indent-tabs-mode t)
+             (which-function-mode t) ; show function name
              (if (fboundp 'whitespace-mode) (whitespace-mode t))))
 
 (add-hook 'python-mode-hook
@@ -133,6 +134,7 @@
              (setq indent-tabs-mode t)
              (setq tab-width 4)
              (setq python-indent 4)
+             (which-function-mode t) ; show function name
              (if (fboundp 'whitespace-mode) (whitespace-mode t))))
 
 (global-set-key (kbd "C-c p")
@@ -344,7 +346,6 @@
  '(diff-added ((t (:foreground "green"))) 'now)
  '(diff-removed ((t (:foreground "red"))) 'now)
  )
-
 
 ;-----------------------
 
