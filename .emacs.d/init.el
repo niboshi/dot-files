@@ -46,13 +46,25 @@
 (global-set-key [M-down-mouse-3] 'ignore)
 (global-set-key [M-mouse-3] 'ignore)
 
+(global-set-key [mouse-4] '(lambda () (interactive) (scroll-down-command 1)))
+(global-set-key [mouse-5] '(lambda () (interactive) (scroll-up-command 1)))
+
 ;-----------------------
 ; Essential keybinding
 ;-----------------------
 ; goto-line
 (global-set-key (kbd "C-l") 'goto-line)
 
-;
+; Move to previous window (opposite of C-x o)
+(global-set-key (kbd "C-x O") (kbd "C-- C-x o"))
+
+; Move window cursor by arrows.
+(global-set-key (kbd "C-x <up>")    'windmove-up)
+(global-set-key (kbd "C-x <down>")  'windmove-down)
+(global-set-key (kbd "C-x <left>")  'windmove-left)
+(global-set-key (kbd "C-x <right>") 'windmove-right)
+
+; C-h
 (define-key key-translation-map (kbd "C-h") "\C-?")
 
 ; bs-show
@@ -69,6 +81,7 @@
 
 ;-----------------------
 ; UI
+;-----------------------
 (if (display-graphic-p)
     (progn
       (setq inhibit-splash-screen t)
@@ -153,6 +166,7 @@
   (progn
     (package-install 'ggtags)
     (package-install 'replace+)
+    (package-install 'neotree)
     ))
 
 ;-----------------------
@@ -168,7 +182,7 @@
             )))))
 
 ;-----------------------
-; eval hotkeys
+; Evaluation hotkeys
 ;-----------------------
 (global-set-key (kbd "C-c e e") 'eval-expression)
 (global-set-key (kbd "C-c e r") 'eval-region)
@@ -178,6 +192,22 @@
 ; Encoding
 ;-----------------------
 (prefer-coding-system 'utf-8)
+
+;-----------------------
+; Editing
+;-----------------------
+; Enable CamelCase-aware word editing.
+(global-subword-mode 1)
+
+;-----------------------
+; ido-mode (Interactive buffer switch, etc.)
+;-----------------------
+(ido-mode 1)
+(ido-everywhere 1)
+(setq ido-enable-prefix t)
+(setq ido-enable-flex-matching t)
+(setq ido-case-fold t) ; Ignore case
+;(setq ido-use-virtual-buffers t)
 
 ;-----------------------
 ; Open explorer
@@ -270,6 +300,8 @@
              (define-key isearch-mode-map "\C-c" 'isearch-toggle-case-fold)
              (define-key isearch-mode-map "\C-j" 'isearch-edit-string))))
 
+(defcustom isearch-help-reminder "awaafw" "abc" :type 'string)
+
 ;-----------------------
 ; ggtags
 ;-----------------------
@@ -284,6 +316,11 @@
       (global-set-key (kbd "C-c g e") 'ggtags-find-tag-regexp)
       (global-set-key (kbd "C-c g f") 'ggtags-find-file)
       (global-set-key (kbd "C-c g u") 'ggtags-update-tags)
+      ; Put ggtags buffer behind
+      (global-set-key (kbd "C-c g -") '(lambda() (interactive)
+                                         (progn
+                                           (let ((buf (get-buffer "*ggtags-global*")))
+                                             (if buf (replace-buffer-in-windows buf))))))
       ))
 
 ;-----------------------
@@ -310,4 +347,9 @@
 
 
 ;-----------------------
+
+; Ignore warning for redefining functions with defadvice.
+;  (ex. in rgrep)
+(setq ad-redefinition-action 'accept)
+
 (message "Ready.")
