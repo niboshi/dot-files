@@ -99,6 +99,10 @@
       ))
 (menu-bar-mode -1)
 
+; Start maximized
+(add-to-list 'default-frame-alist '(fullscreen . maximized))
+
+
 ; Colors
 (set-background-color "black")
 (set-foreground-color "#cccccc")
@@ -151,6 +155,8 @@
     (package-install 'helm)
     (package-install 'projectile)
     (package-install 'helm-projectile)
+    (package-install 'helm-swoop)
+    (package-install 'dtrt-indent) ; auto-detect indentation
     ))
 
 ;-----------------------
@@ -228,7 +234,10 @@
             (setq tab-width 4)
             (setq python-indent 4)
             (which-function-mode t) ; show function name
-            (if (fboundp 'whitespace-mode) (whitespace-mode t))))
+            (if (fboundp 'whitespace-mode) (whitespace-mode t))
+            (when (require 'dtrt-indent nil 'noerror)
+              (dtrt-indent-mode t)
+              )))
 
 ;-----------------------
 ; ido-mode (Interactive buffer switch, etc.)
@@ -274,6 +283,7 @@
 ;-----------------------
 (require 'recentf)
 (recentf-mode 1)
+(setq recentf-keep '(file-remote-p file-readable-p))
 (setq recentf-max-saved-items 1000)
 (setq recentf-max-menu-items 1000)
 (global-set-key (kbd "C-x C-r") 'recentf-open-files)
@@ -391,6 +401,16 @@
   (helm-projectile-on)
   )
   
+;-----------------------
+; etags
+;-----------------------
+(defun create-tags (dir-name filename-pattern)
+  "Create tags file."
+  (interactive
+   (list (read-directory-name "Directory: ")
+         (read-string "File name pattern: " "**/*.py" nil nil)))
+  (eshell-command 
+   (format "cd %s ; etags %s" dir-name filename-pattern)))
 
 
 ;-----------------------
@@ -403,6 +423,16 @@
     (linum-mode 0)
     ))
 (add-hook 'after-change-major-mode-hook 'niboshi-after-change-major-mode-hook)
+
+;-----------------------
+; helm-swoop
+;-----------------------
+(when (require 'helm-swoop nil 'noerror)
+  (global-set-key (kbd "M-i") 'helm-swoop)
+  (global-set-key (kbd "M-I") 'helm-swoop-back-to-last-point)
+  (global-set-key (kbd "C-c M-i") 'helm-multi-swoop)
+  (global-set-key (kbd "C-x M-i") 'helm-multi-swoop-all))
+
 
 ;-----------------------
 
