@@ -288,6 +288,12 @@
 (setq recentf-max-menu-items 1000)
 (global-set-key (kbd "C-x C-r") 'recentf-open-files)
 
+; Start isearch automatically
+(add-hook
+ 'recentf-dialog-mode-hook
+ (lambda()
+   (run-with-timer 0.01 nil 'isearch-forward)))
+
 ;-----------------------
 ; Whitespace
 ;-----------------------
