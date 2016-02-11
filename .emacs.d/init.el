@@ -130,9 +130,9 @@
  "UI"
  (lambda()
    (progn
+     (setq inhibit-splash-screen t)
      (if (display-graphic-p)
          (progn
-           (setq inhibit-splash-screen t)
            (tool-bar-mode -1)
            ))
      (menu-bar-mode -1)
