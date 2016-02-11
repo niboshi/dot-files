@@ -1,6 +1,40 @@
-(require 'server)
-(unless (server-running-p)
-  (server-start))
+;;-----------------------
+;; Profiling setup
+;;-----------------------
+(setq niboshi-init-start-time (current-time))
+(defun niboshi-uptime() (float-time (time-subtract (current-time) niboshi-init-start-time)))
+(defun niboshi-profile (msg fn)
+  (let ((start (niboshi-uptime)))
+    (progn
+      (funcall fn)
+      (let ((end (niboshi-uptime)))
+        (message "%.03f[%.03f] seconds: %s" end (- end start) msg)))))
+
+;;-----------------------
+;; niboshi-setup
+;;-----------------------
+(defun niboshi-setup()
+  (interactive )
+  (progn
+    (package-install 'ggtags)
+    (package-install 'replace+)
+    (package-install 'neotree)
+    (package-install 'helm)
+    (package-install 'projectile)
+    (package-install 'helm-projectile)
+    (package-install 'helm-swoop)
+    (package-install 'dtrt-indent) ; auto-detect indentation
+    ))
+
+;;-----------------------
+;; Server
+;;-----------------------
+(niboshi-profile
+ "Server"
+ (lambda()
+   (when (require 'server nil 'noerror)
+     (unless (server-running-p)
+       (server-start)))))
 
 ;;-----------------------
 (add-to-list 'load-path "~/.emacs.d/lisp")
@@ -92,31 +126,34 @@
 ;;-----------------------
 ;; UI
 ;;-----------------------
-(if (display-graphic-p)
-    (progn
-      (setq inhibit-splash-screen t)
-      (tool-bar-mode -1)
-      ))
-(menu-bar-mode -1)
+(niboshi-profile
+ "UI"
+ (lambda()
+   (progn
+     (if (display-graphic-p)
+         (progn
+           (setq inhibit-splash-screen t)
+           (tool-bar-mode -1)
+           ))
+     (menu-bar-mode -1)
 
-;; Start maximized
-(add-to-list 'default-frame-alist '(fullscreen . maximized))
+     ;; Start maximized
+     (add-to-list 'default-frame-alist '(fullscreen . maximized))
 
+     ;; Colors
+     (add-to-list 'default-frame-alist '(background-color . "black"))
+     (add-to-list 'default-frame-alist '(foreground-color . "#cccccc"))
 
-;; Colors
-(add-to-list 'default-frame-alist '(background-color . "black"))
-(add-to-list 'default-frame-alist '(foreground-color . "#cccccc"))
+     (if (display-graphic-p)
+         (global-hl-line-mode 1))
 
-(if (display-graphic-p)
-    (global-hl-line-mode 1))
-
-;; Transparency
-;; '(active inactive)
-(if (display-graphic-p)
-  (progn
-    (set-frame-parameter (selected-frame) 'alpha '(97 95))
-    (add-to-list 'default-frame-alist '(alpha 97 95))
-))
+     ;; Transparency
+     ;; '(active inactive)
+     (if (display-graphic-p)
+         (progn
+           (set-frame-parameter (selected-frame) 'alpha '(97 95))
+           (add-to-list 'default-frame-alist '(alpha 97 95))
+           )))))
 
 ;;-----------------------
 ;; Show message buffer to the right
@@ -138,36 +175,31 @@
 ;;-----------------------
 ;; MELPA
 ;;-----------------------
-(when (>= emacs-major-version 24)
-  (require 'package)
-  (add-to-list
-   'package-archives
-   '("melpa" . "http://melpa.org/packages/")
-   t)
-  (package-initialize))
+(niboshi-profile
+ "MELPA"
+ (lambda()
+   (when (>= emacs-major-version 24)
+     (require 'package)
+     (add-to-list
+      'package-archives
+      '("melpa" . "http://melpa.org/packages/")
+      t)
+     ;(package-initialize)
+     )))
 
-(defun niboshi-setup()
-  (interactive )
-  (progn
-    (package-install 'ggtags)
-    (package-install 'replace+)
-    (package-install 'neotree)
-    (package-install 'helm)
-    (package-install 'projectile)
-    (package-install 'helm-projectile)
-    (package-install 'helm-swoop)
-    (package-install 'dtrt-indent) ; auto-detect indentation
-    ))
 
 ;;-----------------------
 ;; Load init scripts
 ;;-----------------------
-(dolist (base-dir '("~/.emacs.d/init-user" "~/.emacs.d/init"))
-  (let ((ignore-list '("." "..")))
-    (if (file-accessible-directory-p base-dir)
-        (dolist (file (directory-files base-dir))
-          (if (not (member file ignore-list))
-              (load-file (concat base-dir "/" file)))))))
+(niboshi-profile
+ "Load init scripts"
+ (lambda()
+   (dolist (base-dir '("~/.emacs.d/init-user" "~/.emacs.d/init"))
+     (let ((ignore-list '("." "..")))
+       (if (file-accessible-directory-p base-dir)
+           (dolist (file (directory-files base-dir))
+             (if (not (member file ignore-list))
+                 (load-file (concat base-dir "/" file)))))))))
 
 ;;-----------------------
 ;; Misc
@@ -209,12 +241,15 @@
 ;;-----------------------
 ;; fill-column-indicator
 ;;-----------------------
-(if (display-graphic-p)
-    (when (require 'fill-column-indicator nil 'noerror)
-      (setq-default fci-always-use-textual-rule t) ; Default behaviour (draw line by image) causes line height problem.
-      (setq-default fci-rule-column 80)
-      (setq-default fci-rule-color "gray11")
-      (add-hook 'c-mode-common-hook 'fci-mode)))
+(niboshi-profile
+ "fill-column-indicator"
+ (lambda()
+   (if (display-graphic-p)
+       (when (require 'fill-column-indicator nil 'noerror)
+         (setq-default fci-always-use-textual-rule t) ; Default behaviour (draw line by image) causes line height problem.
+         (setq-default fci-rule-column 80)
+         (setq-default fci-rule-color "gray11")
+         (add-hook 'c-mode-common-hook 'fci-mode)))))
 
 ;;-----------------------
 ;; Hooks
@@ -242,11 +277,16 @@
 ;;-----------------------
 ;; ido-mode (Interactive buffer switch, etc.)
 ;;-----------------------
-(ido-mode nil)
-(setq ido-enable-prefix nil)
-(setq ido-enable-flex-matching t)
-(setq ido-case-fold t) ; Ignore case
-;;(setq ido-use-virtual-buffers t)
+(niboshi-profile
+ "ido"
+ (lambda()
+   (progn
+     (ido-mode nil)
+     (setq ido-enable-prefix nil)
+     (setq ido-enable-flex-matching t)
+     (setq ido-case-fold t) ; Ignore case
+     ;;(setq ido-use-virtual-buffers t)
+     )))
 
 ;;-----------------------
 ;; Open explorer
@@ -281,48 +321,55 @@
 ;;-----------------------
 ;; Recent files
 ;;-----------------------
-(use-package recentf
-  :bind ("C-x C-r" . recentf-open-files)
-  :config
-  (setq recentf-save-file (concat "~/.emacs.d/recentf-" system-name))
-  (setq recentf-keep '(file-remote-p file-readable-p))
-  (setq recentf-max-saved-items 1000)
-  (setq recentf-max-menu-items 1000)
-  (add-hook ; Start isearch automatically
-   'recentf-dialog-mode-hook
-   (lambda()
-     (run-with-timer 0.01 nil 'isearch-forward)))
-  (recentf-mode 1))
-
+(niboshi-profile
+ "recentf"
+ (lambda()
+   (when (require 'recentf nil 'noerror)
+     (global-set-key (kbd "C-x C-r") 'recentf-open-files)
+     (setq recentf-save-file (concat "~/.emacs.d/recentf-" system-name))
+     (setq recentf-keep '(file-remote-p file-readable-p))
+     (setq recentf-max-saved-items 1000)
+     (setq recentf-max-menu-items 1000)
+     (add-hook ; Start isearch automatically
+      'recentf-dialog-mode-hook
+      (lambda()
+        (run-with-timer 0.01 nil 'isearch-forward)))
+     (run-with-timer
+      0.1 nil
+      (lambda()
+        (recentf-mode 1))))))
 
 ;;-----------------------
 ;; Whitespace
 ;;-----------------------
-(if (require 'whitespace nil 'noerror)
-    (progn
-      (autoload 'whitespace-mode "whitespace" "Toggle whitespace visualization." t)
+(niboshi-profile
+ "whitespace"
+ (lambda()
+   (if (require 'whitespace nil 'noerror)
+       (progn
+         (autoload 'whitespace-mode "whitespace" "Toggle whitespace visualization." t)
 
-      (setq whitespace-style '(empty face tabs newline tab-mark newline-mark))
-      ;(setq whitespace-style '(spaces tabs newline space-mark tab-mark newline-mark))
-      (global-set-key (kbd "C-c = w") 'whitespace-mode)
+         (setq whitespace-style '(empty face tabs newline tab-mark newline-mark))
+                                        ;(setq whitespace-style '(spaces tabs newline space-mark tab-mark newline-mark))
+         (global-set-key (kbd "C-c = w") 'whitespace-mode)
 
-      (if (display-graphic-p)
-          (progn
-            (set-face-attribute 'whitespace-tab nil :background nil :foreground "#333333")
-            (set-face-attribute 'whitespace-newline nil :background nil :foreground "#333333")
-            (set-face-attribute 'whitespace-empty nil :background "#200000" :foreground nil)
-            (set-face-attribute 'whitespace-trailing nil :background "#200000" :foreground nil))
-        (progn
-          (set-face-attribute 'whitespace-tab nil :background nil :foreground "brightblack")
-          (set-face-attribute 'whitespace-newline nil :background nil :foreground "brightblack")
-          (set-face-attribute 'whitespace-empty nil :background "red" :foreground nil)
-          (set-face-attribute 'whitespace-trailing nil :background "red" :foreground nil)
-          )))
+         (if (display-graphic-p)
+             (progn
+               (set-face-attribute 'whitespace-tab nil :background nil :foreground "#333333")
+               (set-face-attribute 'whitespace-newline nil :background nil :foreground "#333333")
+               (set-face-attribute 'whitespace-empty nil :background "#200000" :foreground nil)
+               (set-face-attribute 'whitespace-trailing nil :background "#200000" :foreground nil))
+           (progn
+             (set-face-attribute 'whitespace-tab nil :background nil :foreground "brightblack")
+             (set-face-attribute 'whitespace-newline nil :background nil :foreground "brightblack")
+             (set-face-attribute 'whitespace-empty nil :background "red" :foreground nil)
+             (set-face-attribute 'whitespace-trailing nil :background "red" :foreground nil)
+             )))
 
-  (progn
-    (message "Whitespace is unavailable.")
-    (global-set-key (kbd "C-c = w") 'ignore)
-    ))
+     (progn
+       (message "Whitespace is unavailable.")
+       (global-set-key (kbd "C-c = w") 'ignore)
+       ))))
 
 ;;-----------------------
 ;; visible-bell
@@ -360,24 +407,27 @@
 ;;-----------------------
 ;; ggtags
 ;;-----------------------
-(if (require 'ggtags nil 'noerror)
-    (progn
-      (global-set-key (kbd "S-<f12>") 'ggtags-find-reference)
-      (global-set-key (kbd "C-<f12>") 'ggtags-find-definition)
-      (global-set-key (kbd "<f12>") 'ggtags-find-definition)
-      (global-set-key (kbd "C-c g r") 'ggtags-find-reference)
-      (global-set-key (kbd "C-c g d") 'ggtags-find-definition)
-      (global-set-key (kbd "C-c g g") 'ggtags-find-tag-dwim)
-      (global-set-key (kbd "C-c g e") 'ggtags-find-tag-regexp)
-      (global-set-key (kbd "C-c g f") 'ggtags-find-file)
-      (global-set-key (kbd "C-c g u") 'ggtags-update-tags)
-      ;; Put ggtags buffer behind
-      (global-set-key (kbd "C-c g -") (lambda() (interactive)
-                                        (progn
-                                          (let ((buf (get-buffer "*ggtags-global*")))
-                                            (if buf
-                                                (replace-buffer-in-windows buf))))))
-      ))
+(niboshi-profile
+ "ggtags"
+ (lambda()
+   (if (require 'ggtags nil 'noerror)
+       (progn
+         (global-set-key (kbd "S-<f12>") 'ggtags-find-reference)
+         (global-set-key (kbd "C-<f12>") 'ggtags-find-definition)
+         (global-set-key (kbd "<f12>") 'ggtags-find-definition)
+         (global-set-key (kbd "C-c g r") 'ggtags-find-reference)
+         (global-set-key (kbd "C-c g d") 'ggtags-find-definition)
+         (global-set-key (kbd "C-c g g") 'ggtags-find-tag-dwim)
+         (global-set-key (kbd "C-c g e") 'ggtags-find-tag-regexp)
+         (global-set-key (kbd "C-c g f") 'ggtags-find-file)
+         (global-set-key (kbd "C-c g u") 'ggtags-update-tags)
+         ;; Put ggtags buffer behind
+         (global-set-key (kbd "C-c g -") (lambda() (interactive)
+                                           (progn
+                                             (let ((buf (get-buffer "*ggtags-global*")))
+                                               (if buf
+                                                   (replace-buffer-in-windows buf))))))
+         ))))
 
 ;;-----------------------
 ;; compilation
@@ -403,10 +453,15 @@
 ;;-----------------------
 ;; Projectile
 ;;-----------------------
-(when (require 'helm-projectile nil 'noerror)
-  (projectile-global-mode)
-  (helm-projectile-on)
-  )
+(niboshi-profile
+ "Projectile"
+ (lambda()
+   (add-hook
+    'find-file-hook
+    (lambda()
+      (when (require 'helm-projectile nil 'noerror)
+        (projectile-mode)
+        (helm-projectile-toggle 1))))))
   
 ;;-----------------------
 ;; etags
@@ -453,4 +508,5 @@
  (lambda()
    (message "Initialization: %.3f seconds" (float-time (time-subtract after-init-time before-init-time)))))
 
+(niboshi-profile "Ready" 'ignore)
 (message "Ready.")
