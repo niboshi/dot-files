@@ -447,4 +447,10 @@
 ;;  (ex. in rgrep)
 (setq ad-redefinition-action 'accept)
 
+;; Print the time spent in initialization
+(run-with-timer
+ 0.1 nil
+ (lambda()
+   (message "Initialization: %.3f seconds" (float-time (time-subtract after-init-time before-init-time)))))
+
 (message "Ready.")
