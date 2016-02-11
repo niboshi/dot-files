@@ -2,27 +2,27 @@
 (unless (server-running-p)
   (server-start))
 
-;-----------------------
+;;-----------------------
 (add-to-list 'load-path "~/.emacs.d/lisp")
 
 (setq niboshi-hotkey-prefix (kbd "C-c ;"))
 (defun niboshi-make-hotkey (k) (concat niboshi-hotkey-prefix (kbd k)))
 
-;-----------------------
-; Disable original features
-;-----------------------
-; Disable Contrl-Z to suspend
+;;-----------------------
+;; Disable original features
+;;-----------------------
+;; Disable Contrl-Z to suspend
 (if (display-graphic-p)
   (global-unset-key (kbd "C-z")))
 (global-unset-key (kbd "C-c C-z"))
 
-; Disable ALT-key hook, to re-enable Windows system menu
+;; Disable ALT-key hook, to re-enable Windows system menu
 (setq w32-pass-alt-to-system 1)
 
-; Disable IME hotkey
+;; Disable IME hotkey
 (global-unset-key (kbd "C-\\"))
 
-; Disable mouse commands
+;; Disable mouse commands
 (global-set-key [down-mouse-2] 'ignore)
 (global-set-key [mouse-2] 'ignore)
 (global-set-key [down-mouse-3] 'ignore)
@@ -52,46 +52,46 @@
 (global-set-key [mouse-4] (lambda () (interactive) (scroll-down-command 1)))
 (global-set-key [mouse-5] (lambda () (interactive) (scroll-up-command 1)))
 
-;-----------------------
-; Essential keybinding
-;-----------------------
-; goto-line
+;;-----------------------
+;; Essential keybinding
+;;-----------------------
+;; goto-line
 (global-set-key (kbd "C-l") 'goto-line)
 
-; Move to previous window (opposite of C-x o)
+;; Move to previous window (opposite of C-x o)
 (global-set-key (kbd "C-x O") (kbd "C-- C-x o"))
 
-; Move window cursor by arrows.
+;; Move window cursor by arrows.
 (global-set-key (kbd "C-x <up>")    'windmove-up)
 (global-set-key (kbd "C-x <down>")  'windmove-down)
 (global-set-key (kbd "C-x <left>")  'windmove-left)
 (global-set-key (kbd "C-x <right>") 'windmove-right)
 
-; C-h
+;; C-h
 (define-key key-translation-map (kbd "C-h") "\C-?")
 (setq backward-delete-char-untabify-method nil) ; This prevents C-h from converting a tab to spaces.
 
-; bs-show
+;; bs-show
 (if (fboundp 'bs-show)
     (global-set-key (kbd "C-x C-b") 'bs-show))
 
-; Kill a word
+;; Kill a word
 (global-set-key (kbd "M-h") 'backward-kill-word)
 
-; Scroll without moving cursor
+;; Scroll without moving cursor
 (global-set-key (kbd "M-p") (lambda () (interactive) (scroll-down-command 1)))
 (global-set-key (kbd "M-n") (lambda () (interactive) (scroll-up-command 1)))
 
-;-----------------------
-; Essential
-;-----------------------
+;;-----------------------
+;; Essential
+;;-----------------------
 (setq make-backup-files nil)
 (setq auto-save-default nil)
 (setq create-lockfiles nil)
 
-;-----------------------
-; UI
-;-----------------------
+;;-----------------------
+;; UI
+;;-----------------------
 (if (display-graphic-p)
     (progn
       (setq inhibit-splash-screen t)
@@ -99,45 +99,45 @@
       ))
 (menu-bar-mode -1)
 
-; Start maximized
+;; Start maximized
 (add-to-list 'default-frame-alist '(fullscreen . maximized))
 
 
-; Colors
-(set-background-color "black")
-(set-foreground-color "#cccccc")
+;; Colors
+(add-to-list 'default-frame-alist '(background-color . "black"))
+(add-to-list 'default-frame-alist '(foreground-color . "#cccccc"))
 
 (if (display-graphic-p)
     (global-hl-line-mode 1))
 
-; Transparency
-; '(active inactive)
+;; Transparency
+;; '(active inactive)
 (if (display-graphic-p)
   (progn
     (set-frame-parameter (selected-frame) 'alpha '(97 95))
     (add-to-list 'default-frame-alist '(alpha 97 95))
 ))
 
-;-----------------------
-; Show message buffer to the right
-;-----------------------
+;;-----------------------
+;; Show message buffer to the right
+;;-----------------------
 (set-window-buffer
  (split-window nil nil "right")
  "*Messages*")
 
 
-;-----------------------
-; Scroll
-;-----------------------
+;;-----------------------
+;; Scroll
+;;-----------------------
 (unless (display-graphic-p)
   (xterm-mouse-mode t))
 (setq mouse-wheel-scroll-amount '(1 ((shift) . 1) ((control) . nil)))
 (setq mouse-wheel-progressive-speed nil)
 (setq mouse-wheel-follow-mouse 't)
 
-;-----------------------
-; MELPA
-;-----------------------
+;;-----------------------
+;; MELPA
+;;-----------------------
 (when (>= emacs-major-version 24)
   (require 'package)
   (add-to-list
@@ -159,9 +159,9 @@
     (package-install 'dtrt-indent) ; auto-detect indentation
     ))
 
-;-----------------------
-; Load init scripts
-;-----------------------
+;;-----------------------
+;; Load init scripts
+;;-----------------------
 (dolist (base-dir '("~/.emacs.d/init-user" "~/.emacs.d/init"))
   (let ((ignore-list '("." "..")))
     (if (file-accessible-directory-p base-dir)
@@ -169,33 +169,33 @@
           (if (not (member file ignore-list))
               (load-file (concat base-dir "/" file)))))))
 
-;-----------------------
-; Misc
-;-----------------------
+;;-----------------------
+;; Misc
+;;-----------------------
 (setq default-truncate-lines t)
 (setq-default tab-width 4)
 (setq-default indent-tabs-mode nil)
 
-; Show path hotkey
+;; Show path hotkey
 (global-set-key (niboshi-make-hotkey "p")
                 (lambda () (interactive)
                   (kill-new buffer-file-name)
                   (message buffer-file-name)))
 
-; Evaluation hotkeys
+;; Evaluation hotkeys
 (global-set-key (kbd "C-c e e") 'eval-expression)
 (global-set-key (kbd "C-c e r") 'eval-region)
 (global-set-key (kbd "C-c e b") 'eval-buffer)
 
-; Encoding
+;; Encoding
 (prefer-coding-system 'utf-8)
 
-; Enable CamelCase-aware word editing.
+;; Enable CamelCase-aware word editing.
 (global-subword-mode 1)
 
-;-----------------------
-; Line number
-;-----------------------
+;;-----------------------
+;; Line number
+;;-----------------------
 (global-linum-mode 1)
 (if (display-graphic-p)
     (progn
@@ -206,9 +206,9 @@
     (set-face-attribute 'linum nil :background nil :foreground "brightblack")
     ))
 
-;-----------------------
-; fill-column-indicator
-;-----------------------
+;;-----------------------
+;; fill-column-indicator
+;;-----------------------
 (if (display-graphic-p)
     (when (require 'fill-column-indicator nil 'noerror)
       (setq-default fci-always-use-textual-rule t) ; Default behaviour (draw line by image) causes line height problem.
@@ -216,9 +216,9 @@
       (setq-default fci-rule-color "gray11")
       (add-hook 'c-mode-common-hook 'fci-mode)))
 
-;-----------------------
-; Hooks
-;-----------------------
+;;-----------------------
+;; Hooks
+;;-----------------------
 (add-hook 'c-mode-common-hook
           (lambda()
             (setq tab-width 4)
@@ -239,18 +239,18 @@
               (dtrt-indent-mode t)
               )))
 
-;-----------------------
-; ido-mode (Interactive buffer switch, etc.)
-;-----------------------
+;;-----------------------
+;; ido-mode (Interactive buffer switch, etc.)
+;;-----------------------
 (ido-mode nil)
 (setq ido-enable-prefix nil)
 (setq ido-enable-flex-matching t)
 (setq ido-case-fold t) ; Ignore case
-;(setq ido-use-virtual-buffers t)
+;;(setq ido-use-virtual-buffers t)
 
-;-----------------------
-; Open explorer
-;-----------------------
+;;-----------------------
+;; Open explorer
+;;-----------------------
 (if (eq system-type 'windows-nt)
     (if (not (fboundp 'explorer))
         (defun explorer ()
@@ -259,11 +259,11 @@
       (message "Function explorer is already defined.")))
 
 
-;-----------------------
-; Cygwin/MSYS find-grep workaround
-;-----------------------
-; Cygwin/MSYS's find can't handle "NUL" file, which causes some problem in find-grep command family.
-; Here's workaround.
+;;-----------------------
+;; Cygwin/MSYS find-grep workaround
+;;-----------------------
+;; Cygwin/MSYS's find can't handle "NUL" file, which causes some problem in find-grep command family.
+;; Here's workaround.
 (if (eq system-type 'windows-nt)
     (if (boundp 'niboshi-grep-windows-null-device-workaround)
         (defadvice grep-compute-defaults (around grep-compute-defaults-advice-null-device activate)
@@ -272,31 +272,32 @@
           ;;; This is neccessary for 'lgrep', 'rgrep', 'find-grep', etc.
           (let ((null-device "/dev/null")) ad-do-it))))
 
-;-----------------------
-; Disable startup "For information..." message
-; (Note: inhibit-startup-* method also works but it requires hardcoded user name)
-;-----------------------
+;;-----------------------
+;; Disable startup "For information..." message
+;; (Note: inhibit-startup-* method also works but it requires hardcoded user name)
+;;-----------------------
 (defun display-startup-echo-area-message () ())
 
-;-----------------------
-; Recent files
-;-----------------------
-(require 'recentf)
-(recentf-mode 1)
-(setq recentf-keep '(file-remote-p file-readable-p))
-(setq recentf-max-saved-items 1000)
-(setq recentf-max-menu-items 1000)
-(global-set-key (kbd "C-x C-r") 'recentf-open-files)
+;;-----------------------
+;; Recent files
+;;-----------------------
+(use-package recentf
+  :bind ("C-x C-r" . recentf-open-files)
+  :config
+  (setq recentf-save-file (concat "~/.emacs.d/recentf-" system-name))
+  (setq recentf-keep '(file-remote-p file-readable-p))
+  (setq recentf-max-saved-items 1000)
+  (setq recentf-max-menu-items 1000)
+  (add-hook ; Start isearch automatically
+   'recentf-dialog-mode-hook
+   (lambda()
+     (run-with-timer 0.01 nil 'isearch-forward)))
+  (recentf-mode 1))
 
-; Start isearch automatically
-(add-hook
- 'recentf-dialog-mode-hook
- (lambda()
-   (run-with-timer 0.01 nil 'isearch-forward)))
 
-;-----------------------
-; Whitespace
-;-----------------------
+;;-----------------------
+;; Whitespace
+;;-----------------------
 (if (require 'whitespace nil 'noerror)
     (progn
       (autoload 'whitespace-mode "whitespace" "Toggle whitespace visualization." t)
@@ -323,9 +324,9 @@
     (global-set-key (kbd "C-c = w") 'ignore)
     ))
 
-;-----------------------
-; visible-bell
-;-----------------------
+;;-----------------------
+;; visible-bell
+;;-----------------------
  (defun niboshi-ring-bell-function ()
    (invert-face 'mode-line)
    (run-with-timer 0.1 nil 'invert-face 'mode-line))
@@ -333,9 +334,9 @@
  (setq visible-bell nil
        ring-bell-function 'niboshi-ring-bell-function)
 
-;-----------------------
-; incremental search
-;-----------------------
+;;-----------------------
+;; incremental search
+;;-----------------------
 (add-hook 'isearch-mode-hook
           (lambda()
             (define-key isearch-mode-map "\C-h" 'isearch-mode-help)
@@ -343,9 +344,9 @@
             (define-key isearch-mode-map "\C-c" 'isearch-toggle-case-fold)
             (define-key isearch-mode-map "\C-j" 'isearch-edit-string)))
 
-;-----------------------
-; Put other buffer behind
-;-----------------------
+;;-----------------------
+;; Put other buffer behind
+;;-----------------------
 (defun niboshi-put-other-buffer-behind()
   (interactive)
   (let ((win (car (cdr (window-list)))))
@@ -356,9 +357,9 @@
 
 (global-set-key (niboshi-make-hotkey "-") 'niboshi-put-other-buffer-behind)
 
-;-----------------------
-; ggtags
-;-----------------------
+;;-----------------------
+;; ggtags
+;;-----------------------
 (if (require 'ggtags nil 'noerror)
     (progn
       (global-set-key (kbd "S-<f12>") 'ggtags-find-reference)
@@ -370,7 +371,7 @@
       (global-set-key (kbd "C-c g e") 'ggtags-find-tag-regexp)
       (global-set-key (kbd "C-c g f") 'ggtags-find-file)
       (global-set-key (kbd "C-c g u") 'ggtags-update-tags)
-      ; Put ggtags buffer behind
+      ;; Put ggtags buffer behind
       (global-set-key (kbd "C-c g -") (lambda() (interactive)
                                         (progn
                                           (let ((buf (get-buffer "*ggtags-global*")))
@@ -378,9 +379,9 @@
                                                 (replace-buffer-in-windows buf))))))
       ))
 
-;-----------------------
-; compilation
-;-----------------------
+;;-----------------------
+;; compilation
+;;-----------------------
 (global-set-key (kbd "C-c c c") 'compile)
 (global-set-key (kbd "C-c c n") 'compilation-next-error)
 (global-set-key (kbd "C-c c p") 'compilation-previous-error)
@@ -391,25 +392,25 @@
               (setq complation-auto-jump-to-first-error t)
               )))
 
-;-----------------------
-; diff
-;-----------------------
+;;-----------------------
+;; diff
+;;-----------------------
 (custom-set-faces
  '(diff-added ((t (:foreground "green"))) 'now)
  '(diff-removed ((t (:foreground "red"))) 'now)
  )
 
-;-----------------------
-; Projectile
-;-----------------------
+;;-----------------------
+;; Projectile
+;;-----------------------
 (when (require 'helm-projectile nil 'noerror)
   (projectile-global-mode)
   (helm-projectile-on)
   )
   
-;-----------------------
-; etags
-;-----------------------
+;;-----------------------
+;; etags
+;;-----------------------
 (defun create-tags (dir-name filename-pattern)
   "Create tags file."
   (interactive
@@ -419,10 +420,10 @@
    (format "cd %s ; etags %s" dir-name filename-pattern)))
 
 
-;-----------------------
-; Hooks
-;-----------------------
-; Special buffers (whose name is surrounded by * *)
+;;-----------------------
+;; Hooks
+;;-----------------------
+;; Special buffers (whose name is surrounded by * *)
 (defun niboshi-after-change-major-mode-hook()
   (when (string-match "^\*.*\*$" (buffer-name))
     (setq truncate-lines t)
@@ -430,9 +431,9 @@
     ))
 (add-hook 'after-change-major-mode-hook 'niboshi-after-change-major-mode-hook)
 
-;-----------------------
-; helm-swoop
-;-----------------------
+;;-----------------------
+;; helm-swoop
+;;-----------------------
 (when (require 'helm-swoop nil 'noerror)
   (global-set-key (kbd "M-i") 'helm-swoop)
   (global-set-key (kbd "M-I") 'helm-swoop-back-to-last-point)
@@ -440,10 +441,10 @@
   (global-set-key (kbd "C-x M-i") 'helm-multi-swoop-all))
 
 
-;-----------------------
+;;-----------------------
 
-; Ignore warning for redefining functions with defadvice.
-;  (ex. in rgrep)
+;; Ignore warning for redefining functions with defadvice.
+;;  (ex. in rgrep)
 (setq ad-redefinition-action 'accept)
 
 (message "Ready.")
