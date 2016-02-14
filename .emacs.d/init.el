@@ -5,10 +5,9 @@
 (defun niboshi-uptime() (float-time (time-subtract (current-time) niboshi-init-start-time)))
 (defun niboshi-profile (msg fn)
   (let ((start (niboshi-uptime)))
-    (progn
-      (funcall fn)
-      (let ((end (niboshi-uptime)))
-        (message "%.03f[%.03f] seconds: %s" end (- end start) msg)))))
+    (funcall fn)
+    (let ((end (niboshi-uptime)))
+      (message "%.03f[%.03f] seconds: %s" end (- end start) msg))))
 
 ;;-----------------------
 ;; niboshi-setup
@@ -228,15 +227,13 @@
 ;;-----------------------
 ;; Line number
 ;;-----------------------
-(global-linum-mode 1)
-(if (display-graphic-p)
-    (progn
+(when (require 'linum nil 'ignore)
+  (add-hook 'find-file-hook (lambda() (linum-mode 1)))
+  (if (display-graphic-p)
       (set-face-attribute 'linum nil :background nil :foreground "#444444")
-      )
-  (progn
-    (setq linum-format "%d ")
-    (set-face-attribute 'linum nil :background nil :foreground "brightblack")
-    ))
+    (progn
+      (setq linum-format "%d ")
+      (set-face-attribute 'linum nil :background nil :foreground "brightblack"))))
 
 ;;-----------------------
 ;; fill-column-indicator
@@ -285,7 +282,7 @@
      (setq ido-enable-prefix nil)
      (setq ido-enable-flex-matching t)
      (setq ido-case-fold t) ; Ignore case
-     ;;(setq ido-use-virtual-buffers t)
+     (setq ido-use-virtual-buffers t)
      )))
 
 ;;-----------------------
@@ -481,9 +478,7 @@
 ;; Special buffers (whose name is surrounded by * *)
 (defun niboshi-after-change-major-mode-hook()
   (when (string-match "^\*.*\*$" (buffer-name))
-    (setq truncate-lines t)
-    (linum-mode 0)
-    ))
+    (setq truncate-lines t)))
 (add-hook 'after-change-major-mode-hook 'niboshi-after-change-major-mode-hook)
 
 ;;-----------------------
