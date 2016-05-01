@@ -445,10 +445,27 @@
 ;;-----------------------
 ;; diff
 ;;-----------------------
-(custom-set-faces
- '(diff-added ((t (:foreground "green"))) 'now)
- '(diff-removed ((t (:foreground "red"))) 'now)
- )
+(eval-after-load 'diff-mode
+  '(progn
+     (set-face-attribute 'diff-added   nil :foreground "green" :background "black")
+     (set-face-attribute 'diff-removed nil :foreground "red"   :background "black")
+     ))
+;;-----------------------
+;; magit
+;;-----------------------
+(eval-after-load 'magit
+  '(progn
+     (let (
+           (background-highlight "gray10"))
+       (set-face-attribute 'magit-diff-context-highlight nil :foreground nil       :background background-highlight)
+       (set-face-attribute 'magit-diff-added             nil :foreground "green"   :background nil)
+       (set-face-attribute 'magit-diffstat-added         nil :foreground "green"   :background nil)
+       (set-face-attribute 'magit-diff-removed           nil :foreground "red"     :background nil)
+       (set-face-attribute 'magit-diffstat-removed       nil :foreground "red"     :background nil)
+       (set-face-attribute 'magit-diff-added-highlight   nil :foreground "green"   :background background-highlight)
+       (set-face-attribute 'magit-diff-removed-highlight nil :foreground "red"     :background background-highlight)
+       (set-face-attribute 'magit-diff-file-heading      nil :foreground "#ccccff" :background "#006699")
+     )))
 
 ;;-----------------------
 ;; Projectile
