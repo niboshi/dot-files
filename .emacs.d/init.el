@@ -204,6 +204,26 @@
                  (load-file (concat base-dir "/" file)))))))))
 
 ;;-----------------------
+;; Per-host coloring
+;;-----------------------
+(add-hook 'after-init-hook
+          (lambda()
+            (let ((name (downcase system-name)))
+              (cond
+               ((string= name "amane")
+                (set-face-attribute 'mode-line nil :background "green")
+                )
+               ((string= name "natsumi")
+                (set-face-attribute 'mode-line nil :background "deep sky blue")
+                )
+               (t
+                (message (concat "Unknown host: " name))
+                (set-face-attribute 'mode-line nil :background "orange")
+                )
+               )
+              )))
+
+;;-----------------------
 ;; Misc
 ;;-----------------------
 (setq default-truncate-lines t)
