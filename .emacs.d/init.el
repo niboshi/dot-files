@@ -515,11 +515,24 @@
 ;;-----------------------
 ;; Hooks
 ;;-----------------------
-;; Special buffers (whose name is surrounded by * *)
-(defun niboshi-after-change-major-mode-hook()
+;; Disable truncate-lines for special buffers (whose name is surrounded by * *)
+(defun niboshi-choose-truncate-lines()
   (when (string-match "^\*.*\*$" (buffer-name))
     (setq truncate-lines t)))
-(add-hook 'after-change-major-mode-hook 'niboshi-after-change-major-mode-hook)
+;; Choose mode line text
+(defvar niboshi-mode-name-alist
+  '(
+    (emacs-lisp-mode       . "elisp")
+    (lisp-interaction-mode . "i-elisp")
+    (python-mode           . "PY")
+  ))
+(defun niboshi-choose-mode-line-text()
+  (let ((n (cdr (assoc major-mode niboshi-mode-name-alist))))
+    (if n (setq mode-name n))))
+
+(add-hook 'after-change-major-mode-hook (lambda()
+                                          (niboshi-choose-truncate-lines)
+                                          (niboshi-choose-mode-line-text)))
 
 ;;-----------------------
 ;; helm-swoop
