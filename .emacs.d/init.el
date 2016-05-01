@@ -473,6 +473,7 @@
 (niboshi-profile
  "Projectile"
  (lambda()
+   (setq projectile-mode-line "[prj]") ; Prevent lag on cursor move
    (add-hook
     'find-file-hook
     (lambda()
