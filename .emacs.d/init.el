@@ -15,6 +15,7 @@
 (defun niboshi-setup()
   (interactive )
   (progn
+    (message "niboshi-setup: Starting...")
     (package-install 'ggtags)
     (package-install 'replace+)
     (package-install 'neotree)
@@ -23,7 +24,9 @@
     (package-install 'helm-projectile)
     (package-install 'helm-swoop)
     (package-install 'dtrt-indent) ; auto-detect indentation
-    ))
+    (package-install 'magit)
+    (message "niboshi-setup: Finished")
+   ))
 
 ;;-----------------------
 ;; Server
