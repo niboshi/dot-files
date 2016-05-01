@@ -206,22 +206,16 @@
 ;;-----------------------
 ;; Per-host coloring
 ;;-----------------------
-(add-hook 'after-init-hook
-          (lambda()
-            (let ((name (downcase system-name)))
-              (cond
-               ((string= name "amane")
-                (set-face-attribute 'mode-line nil :background "green")
-                )
-               ((string= name "natsumi")
-                (set-face-attribute 'mode-line nil :background "deep sky blue")
-                )
-               (t
-                (message (concat "Unknown host: " name))
-                (set-face-attribute 'mode-line nil :background "orange")
-                )
-               )
-              )))
+(defvar niboshi-host-color-alist
+  '(
+    ("amane" . "green")
+    ("natsumi" . "deep sky blue")
+  ))
+(defvar niboshi-host-color
+  (let ((color (cdr (assoc (downcase system-name) niboshi-host-color-alist))))
+    (if color color "orange")))
+
+(add-hook 'after-init-hook (lambda() (set-face-attribute 'mode-line nil :background niboshi-host-color)))
 
 ;;-----------------------
 ;; Misc
@@ -470,6 +464,7 @@
      (set-face-attribute 'diff-added   nil :foreground "green" :background "black")
      (set-face-attribute 'diff-removed nil :foreground "red"   :background "black")
      ))
+
 ;;-----------------------
 ;; magit
 ;;-----------------------
