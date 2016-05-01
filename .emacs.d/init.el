@@ -530,6 +530,12 @@
   (global-set-key (kbd "C-c M-i") 'helm-multi-swoop)
   (global-set-key (kbd "C-x M-i") 'helm-multi-swoop-all))
 
+;;-----------------------
+;; vc
+;;-----------------------
+;; Disable backends except SVN
+;; because vc often causes slowdown.
+(setq vc-handled-backends '(SVN))
 
 ;;-----------------------
 
