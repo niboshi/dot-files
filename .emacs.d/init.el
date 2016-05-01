@@ -490,6 +490,7 @@
 ;;-----------------------
 ;; Projectile
 ;;-----------------------
+;; Trigger C-c p to enable projectile-mode.
 (niboshi-profile
  "Projectile"
  (lambda()
@@ -497,9 +498,12 @@
    (add-hook
     'find-file-hook
     (lambda()
-      (when (require 'helm-projectile nil 'noerror)
-        (projectile-mode)
-        (helm-projectile-toggle 1))))))
+      (local-set-key (kbd "C-c p")
+                     (lambda() (interactive)
+                       (local-unset-key (kbd "C-c p"))
+                       (when (require 'helm-projectile nil 'noerror)
+                         (projectile-mode)
+                         (helm-projectile-toggle 1))))))))
   
 ;;-----------------------
 ;; etags
