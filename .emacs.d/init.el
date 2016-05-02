@@ -16,15 +16,15 @@
   (interactive )
   (progn
     (message "niboshi-setup: Starting...")
-    (package-install 'ggtags)
-    (package-install 'replace+)
-    (package-install 'neotree)
-    (package-install 'helm)
-    (package-install 'projectile)
-    (package-install 'helm-projectile)
-    (package-install 'helm-swoop)
-    (package-install 'dtrt-indent) ; auto-detect indentation
-    (package-install 'magit)
+    (ignore-errors (package-install 'ggtags))
+    (ignore-errors (package-install 'replace+))
+    (ignore-errors (package-install 'neotree))
+    (ignore-errors (package-install 'helm))
+    (ignore-errors (package-install 'projectile))
+    (ignore-errors (package-install 'helm-projectile))
+    (ignore-errors (package-install 'helm-swoop))
+    (ignore-errors (package-install 'dtrt-indent)) ; auto-detect indentation
+    (ignore-errors (package-install 'magit))
     (message "niboshi-setup: Finished")
    ))
 
