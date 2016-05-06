@@ -19,11 +19,10 @@
 ;; niboshi-setup
 ;;-----------------------
 (defun niboshi-setup()
-  (interactive )
+  (interactive)
   (progn
     (message "niboshi-setup: Starting...")
     (ignore-errors (package-install 'ggtags))
-    (ignore-errors (package-install 'replace+))
     (ignore-errors (package-install 'neotree))
     (ignore-errors (package-install 'helm))
     (ignore-errors (package-install 'projectile))
