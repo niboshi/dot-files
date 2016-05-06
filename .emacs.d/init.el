@@ -10,6 +10,12 @@
       (message "%.03f[%.03f] seconds: %s" end (- end start) msg))))
 
 ;;-----------------------
+;; Custom variable
+;;-----------------------
+(setq niboshi-default-background "black"
+      niboshi-default-foreground "#cccccc")
+
+;;-----------------------
 ;; niboshi-setup
 ;;-----------------------
 (defun niboshi-setup()
@@ -25,8 +31,9 @@
     (ignore-errors (package-install 'helm-swoop))
     (ignore-errors (package-install 'dtrt-indent)) ; auto-detect indentation
     (ignore-errors (package-install 'magit))
+    (ignore-errors (package-install 'markdown-mode))
     (message "niboshi-setup: Finished")
-   ))
+    ))
 
 ;;-----------------------
 ;; Server
@@ -143,11 +150,14 @@
      (add-to-list 'default-frame-alist '(fullscreen . maximized))
 
      ;; Colors
-     (add-to-list 'default-frame-alist '(background-color . "black"))
-     (add-to-list 'default-frame-alist '(foreground-color . "#cccccc"))
+     (add-to-list 'default-frame-alist `(background-color . ,niboshi-default-background))
+     (add-to-list 'default-frame-alist `(foreground-color . ,niboshi-default-foreground))
 
-     (if (display-graphic-p)
-         (global-hl-line-mode 1))
+     ;; Highlight line
+     (global-hl-line-mode 1)
+     (set-face-background
+      hl-line-face
+      (if (display-graphic-p) "#112222" "#262626"))
 
      ;; Transparency
      ;; '(active inactive)
@@ -231,9 +241,16 @@
                   (message buffer-file-name)))
 
 ;; Evaluation hotkeys
-(global-set-key (kbd "C-c e e") 'eval-expression)
-(global-set-key (kbd "C-c e r") 'eval-region)
-(global-set-key (kbd "C-c e b") 'eval-buffer)
+(defun niboshi-eval-wrapper(eval-func)
+  (progn
+    (niboshi-bring-message-buffer-to-front)
+    (message "--- eval")
+    (call-interactively eval-func)
+    (message "OK")))
+
+(global-set-key (kbd "C-c e e") (lambda() (interactive) (niboshi-eval-wrapper 'eval-expression)))
+(global-set-key (kbd "C-c e r") (lambda() (interactive) (niboshi-eval-wrapper 'eval-region)))
+(global-set-key (kbd "C-c e b") (lambda() (interactive) (niboshi-eval-wrapper 'eval-buffer)))
 
 ;; Encoding
 (prefer-coding-system 'utf-8)
@@ -344,6 +361,7 @@
      (setq recentf-keep '(file-remote-p file-readable-p))
      (setq recentf-max-saved-items 1000)
      (setq recentf-max-menu-items 1000)
+     (setq recentf-auto-cleanup 'never)
      (add-hook ; Start isearch automatically
       'recentf-dialog-mode-hook
       (lambda()
@@ -369,13 +387,13 @@
 
          (if (display-graphic-p)
              (progn
-               (set-face-attribute 'whitespace-tab nil :background nil :foreground "#333333")
-               (set-face-attribute 'whitespace-newline nil :background nil :foreground "#333333")
+               (set-face-attribute 'whitespace-tab nil :background niboshi-default-background :foreground "#333333")
+               (set-face-attribute 'whitespace-newline nil :background niboshi-default-background :foreground "#333333")
                (set-face-attribute 'whitespace-empty nil :background "#200000" :foreground nil)
                (set-face-attribute 'whitespace-trailing nil :background "#200000" :foreground nil))
            (progn
-             (set-face-attribute 'whitespace-tab nil :background nil :foreground "brightblack")
-             (set-face-attribute 'whitespace-newline nil :background nil :foreground "brightblack")
+             (set-face-attribute 'whitespace-tab nil :background niboshi-default-background :foreground "brightblack")
+             (set-face-attribute 'whitespace-newline nil :background niboshi-default-background :foreground "brightblack")
              (set-face-attribute 'whitespace-empty nil :background "red" :foreground nil)
              (set-face-attribute 'whitespace-trailing nil :background "red" :foreground nil)
              )))
@@ -409,14 +427,19 @@
 ;; Put other buffer behind
 ;;-----------------------
 (defun niboshi-put-other-buffer-behind()
-  (interactive)
   (let ((win (car (cdr (window-list)))))
     (if win
         (let ((buf (window-buffer win)))
           (if buf
               (replace-buffer-in-windows buf))))))
 
-(global-set-key (niboshi-make-hotkey "-") 'niboshi-put-other-buffer-behind)
+(global-set-key (niboshi-make-hotkey "-") (lambda() (interactive) (niboshi-put-other-buffer-behind)))
+
+(defun niboshi-bring-message-buffer-to-front()
+  (let ((old-win (get-buffer-window)))
+    (progn
+      (switch-to-buffer-other-window "*Messages*")
+      (select-window old-win))))
 
 ;;-----------------------
 ;; ggtags
@@ -424,25 +447,28 @@
 (niboshi-profile
  "ggtags"
  (lambda()
-   (if (require 'ggtags nil 'noerror)
-       (progn
-         (global-set-key (kbd "S-<f12>") 'ggtags-find-reference)
-         (global-set-key (kbd "C-<f12>") 'ggtags-find-definition)
-         (global-set-key (kbd "<f12>") 'ggtags-find-definition)
-         (global-set-key (kbd "C-c g r") 'ggtags-find-reference)
-         (global-set-key (kbd "C-c g d") 'ggtags-find-definition)
-         (global-set-key (kbd "C-c g g") 'ggtags-find-tag-dwim)
-         (global-set-key (kbd "C-c g e") 'ggtags-find-tag-regexp)
-         (global-set-key (kbd "C-c g f") 'ggtags-find-file)
-         (global-set-key (kbd "C-c g u") 'ggtags-update-tags)
-         ;; Put ggtags buffer behind
-         (global-set-key (kbd "C-c g -") (lambda() (interactive)
-                                           (progn
-                                             (let ((buf (get-buffer "*ggtags-global*")))
-                                               (if buf
-                                                   (replace-buffer-in-windows buf))))))
-         ))))
-
+   (add-hook
+    'after-init-hook
+    (lambda()
+      (if (require 'ggtags nil 'noerror)
+          (add-hook
+           'ggtags-mode-hook
+           (lambda()
+             (global-set-key (kbd "S-<f12>") 'ggtags-find-reference)
+             (global-set-key (kbd "C-<f12>") 'ggtags-find-definition)
+             (global-set-key (kbd "<f12>") 'ggtags-find-definition)
+             (global-set-key (kbd "C-c g r") 'ggtags-find-reference)
+             (global-set-key (kbd "C-c g d") 'ggtags-find-definition)
+             (global-set-key (kbd "C-c g g") 'ggtags-find-tag-dwim)
+             (global-set-key (kbd "C-c g e") 'ggtags-find-tag-regexp)
+             (global-set-key (kbd "C-c g f") 'ggtags-find-file)
+             (global-set-key (kbd "C-c g u") 'ggtags-update-tags)
+             ;; Put ggtags buffer behind
+             (global-set-key (kbd "C-c g -") (lambda() (interactive)
+                                               (progn
+                                                 (let ((buf (get-buffer "*ggtags-global*")))
+                                                   (if buf
+                                                       (replace-buffer-in-windows buf)))))))))))))
 ;;-----------------------
 ;; compilation
 ;;-----------------------
@@ -489,17 +515,22 @@
 (niboshi-profile
  "Projectile"
  (lambda()
+   (setq projectile-indexing-method 'alien)
+   (setq projectile-enable-caching t)
    (setq projectile-mode-line "[prj]") ; Prevent lag on cursor move
    (add-hook
     'find-file-hook
     (lambda()
       (local-set-key (kbd "C-c p")
                      (lambda() (interactive)
+                       (message "Enabling projectile...")
                        (local-unset-key (kbd "C-c p"))
                        (when (require 'helm-projectile nil 'noerror)
-                         (projectile-mode)
-                         (helm-projectile-toggle 1))))))))
-  
+                         ;; Enable globally
+                         (projectile-global-mode)
+                         (helm-projectile-toggle 1))
+                       (message nil)))))))
+
 ;;-----------------------
 ;; etags
 ;;-----------------------
@@ -549,6 +580,46 @@
 ;; Disable backends except SVN
 ;; because vc often causes slowdown.
 (setq vc-handled-backends '(SVN))
+
+;;-----------------------
+;; Markdown
+;;-----------------------
+(add-hook 'markdown-mode-hook
+          (lambda()
+            ;; Override markdown preview filename
+            (defun markdown-export-file-name (&optional extension)
+              (when (buffer-file-name)
+                (unless extension
+                  (setq extension ".html"))
+                (concat
+                 (file-name-as-directory temporary-file-directory)
+                 (file-name-as-directory "emacs-markdown")
+                 (file-name-nondirectory (buffer-file-name))
+                 extension)))
+
+            ;; Select available markdown renderer
+            (let ((command-succeeded (lambda(cmd) (eq 0 (call-process shell-file-name nil nil nil shell-command-switch cmd)))))
+              (setq markdown-command
+                    (cond
+                     ((funcall command-succeeded "markdown --help") "markdown")
+                     ((funcall command-succeeded "python -c \"import markdown2\"") "python -m markdown2 --extras fenced-code-blocks")
+                     ((funcall command-succeeded "python -c \"import markdown\"") "python -m markdown -x markdown.extensions.fenced_code")
+                     (t nil))))))
+
+;;-----------------------
+;; Tips
+;;-----------------------
+(add-hook 'after-init-hook
+          (lambda()
+            (let ((filename "~/.emacs.d/tips.md"))
+              (when (file-exists-p filename)
+                (let ((grid-l (concat (char-to-string #x2506))))
+                  (message " ")
+                  (dolist (line (split-string
+                                 (with-temp-buffer
+                                   (insert-file-contents filename)
+                                   (buffer-string)) "\n"))
+                    (message (concat grid-l line))))))))
 
 ;;-----------------------
 
