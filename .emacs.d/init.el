@@ -579,6 +579,21 @@
                      (t nil))))))
 
 ;;-----------------------
+;; Tips
+;;-----------------------
+(add-hook 'after-init-hook
+          (lambda()
+            (let ((filename "~/.emacs.d/tips.md"))
+              (when (file-exists-p filename)
+                (let ((grid-l (concat (char-to-string #x2506))))
+                  (message " ")
+                  (dolist (line (split-string
+                                 (with-temp-buffer
+                                   (insert-file-contents filename)
+                                   (buffer-string)) "\n"))
+                    (message (concat grid-l line))))))))
+
+;;-----------------------
 
 ;; Ignore warning for redefining functions with defadvice.
 ;;  (ex. in rgrep)
