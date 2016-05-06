@@ -154,9 +154,10 @@
      (add-to-list 'default-frame-alist `(foreground-color . ,niboshi-default-foreground))
 
      ;; Highlight line
-     (when (display-graphic-p)
-       (global-hl-line-mode 1)
-       (set-face-background hl-line-face "#112222"))
+     (global-hl-line-mode 1)
+     (set-face-background
+      hl-line-face
+      (if (display-graphic-p) "#112222" "#262626"))
 
      ;; Transparency
      ;; '(active inactive)
