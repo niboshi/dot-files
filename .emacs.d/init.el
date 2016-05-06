@@ -147,8 +147,10 @@
      (add-to-list 'default-frame-alist '(background-color . "black"))
      (add-to-list 'default-frame-alist '(foreground-color . "#cccccc"))
 
-     (if (display-graphic-p)
-         (global-hl-line-mode 1))
+     ;; Highlight line
+     (when (display-graphic-p)
+       (global-hl-line-mode 1)
+       (set-face-background hl-line-face "#112222"))
 
      ;; Transparency
      ;; '(active inactive)
