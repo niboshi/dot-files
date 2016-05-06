@@ -240,9 +240,16 @@
                   (message buffer-file-name)))
 
 ;; Evaluation hotkeys
-(global-set-key (kbd "C-c e e") 'eval-expression)
-(global-set-key (kbd "C-c e r") 'eval-region)
-(global-set-key (kbd "C-c e b") 'eval-buffer)
+(defun niboshi-eval-wrapper(eval-func)
+  (progn
+    (niboshi-bring-message-buffer-to-front)
+    (message "--- eval")
+    (call-interactively eval-func)
+    (message "OK")))
+
+(global-set-key (kbd "C-c e e") (lambda() (interactive) (niboshi-eval-wrapper 'eval-expression)))
+(global-set-key (kbd "C-c e r") (lambda() (interactive) (niboshi-eval-wrapper 'eval-region)))
+(global-set-key (kbd "C-c e b") (lambda() (interactive) (niboshi-eval-wrapper 'eval-buffer)))
 
 ;; Encoding
 (prefer-coding-system 'utf-8)
@@ -419,14 +426,19 @@
 ;; Put other buffer behind
 ;;-----------------------
 (defun niboshi-put-other-buffer-behind()
-  (interactive)
   (let ((win (car (cdr (window-list)))))
     (if win
         (let ((buf (window-buffer win)))
           (if buf
               (replace-buffer-in-windows buf))))))
 
-(global-set-key (niboshi-make-hotkey "-") 'niboshi-put-other-buffer-behind)
+(global-set-key (niboshi-make-hotkey "-") (lambda() (interactive) (niboshi-put-other-buffer-behind)))
+
+(defun niboshi-bring-message-buffer-to-front()
+  (let ((old-win (get-buffer-window)))
+    (progn
+      (switch-to-buffer-other-window "*Messages*")
+      (select-window old-win))))
 
 ;;-----------------------
 ;; ggtags
