@@ -10,6 +10,12 @@
       (message "%.03f[%.03f] seconds: %s" end (- end start) msg))))
 
 ;;-----------------------
+;; Custom variable
+;;-----------------------
+(setq niboshi-default-background "black"
+      niboshi-default-foreground "#cccccc")
+
+;;-----------------------
 ;; niboshi-setup
 ;;-----------------------
 (defun niboshi-setup()
@@ -144,8 +150,8 @@
      (add-to-list 'default-frame-alist '(fullscreen . maximized))
 
      ;; Colors
-     (add-to-list 'default-frame-alist '(background-color . "black"))
-     (add-to-list 'default-frame-alist '(foreground-color . "#cccccc"))
+     (add-to-list 'default-frame-alist `(background-color . ,niboshi-default-background))
+     (add-to-list 'default-frame-alist `(foreground-color . ,niboshi-default-foreground))
 
      ;; Highlight line
      (when (display-graphic-p)
@@ -373,13 +379,13 @@
 
          (if (display-graphic-p)
              (progn
-               (set-face-attribute 'whitespace-tab nil :background nil :foreground "#333333")
-               (set-face-attribute 'whitespace-newline nil :background nil :foreground "#333333")
+               (set-face-attribute 'whitespace-tab nil :background niboshi-default-background :foreground "#333333")
+               (set-face-attribute 'whitespace-newline nil :background niboshi-default-background :foreground "#333333")
                (set-face-attribute 'whitespace-empty nil :background "#200000" :foreground nil)
                (set-face-attribute 'whitespace-trailing nil :background "#200000" :foreground nil))
            (progn
-             (set-face-attribute 'whitespace-tab nil :background nil :foreground "brightblack")
-             (set-face-attribute 'whitespace-newline nil :background nil :foreground "brightblack")
+             (set-face-attribute 'whitespace-tab nil :background niboshi-default-background :foreground "brightblack")
+             (set-face-attribute 'whitespace-newline nil :background niboshi-default-background :foreground "brightblack")
              (set-face-attribute 'whitespace-empty nil :background "red" :foreground nil)
              (set-face-attribute 'whitespace-trailing nil :background "red" :foreground nil)
              )))
