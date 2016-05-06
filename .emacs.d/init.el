@@ -428,25 +428,28 @@
 (niboshi-profile
  "ggtags"
  (lambda()
-   (if (require 'ggtags nil 'noerror)
-       (progn
-         (global-set-key (kbd "S-<f12>") 'ggtags-find-reference)
-         (global-set-key (kbd "C-<f12>") 'ggtags-find-definition)
-         (global-set-key (kbd "<f12>") 'ggtags-find-definition)
-         (global-set-key (kbd "C-c g r") 'ggtags-find-reference)
-         (global-set-key (kbd "C-c g d") 'ggtags-find-definition)
-         (global-set-key (kbd "C-c g g") 'ggtags-find-tag-dwim)
-         (global-set-key (kbd "C-c g e") 'ggtags-find-tag-regexp)
-         (global-set-key (kbd "C-c g f") 'ggtags-find-file)
-         (global-set-key (kbd "C-c g u") 'ggtags-update-tags)
-         ;; Put ggtags buffer behind
-         (global-set-key (kbd "C-c g -") (lambda() (interactive)
-                                           (progn
-                                             (let ((buf (get-buffer "*ggtags-global*")))
-                                               (if buf
-                                                   (replace-buffer-in-windows buf))))))
-         ))))
-
+   (add-hook
+    'after-init-hook
+    (lambda()
+      (if (require 'ggtags nil 'noerror)
+          (add-hook
+           'ggtags-mode-hook
+           (lambda()
+             (global-set-key (kbd "S-<f12>") 'ggtags-find-reference)
+             (global-set-key (kbd "C-<f12>") 'ggtags-find-definition)
+             (global-set-key (kbd "<f12>") 'ggtags-find-definition)
+             (global-set-key (kbd "C-c g r") 'ggtags-find-reference)
+             (global-set-key (kbd "C-c g d") 'ggtags-find-definition)
+             (global-set-key (kbd "C-c g g") 'ggtags-find-tag-dwim)
+             (global-set-key (kbd "C-c g e") 'ggtags-find-tag-regexp)
+             (global-set-key (kbd "C-c g f") 'ggtags-find-file)
+             (global-set-key (kbd "C-c g u") 'ggtags-update-tags)
+             ;; Put ggtags buffer behind
+             (global-set-key (kbd "C-c g -") (lambda() (interactive)
+                                               (progn
+                                                 (let ((buf (get-buffer "*ggtags-global*")))
+                                                   (if buf
+                                                       (replace-buffer-in-windows buf)))))))))))))
 ;;-----------------------
 ;; compilation
 ;;-----------------------
