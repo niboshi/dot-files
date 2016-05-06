@@ -347,6 +347,7 @@
      (setq recentf-keep '(file-remote-p file-readable-p))
      (setq recentf-max-saved-items 1000)
      (setq recentf-max-menu-items 1000)
+     (setq recentf-auto-cleanup 'never)
      (add-hook ; Start isearch automatically
       'recentf-dialog-mode-hook
       (lambda()
