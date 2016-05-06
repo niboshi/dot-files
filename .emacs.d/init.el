@@ -515,17 +515,22 @@
 (niboshi-profile
  "Projectile"
  (lambda()
+   (setq projectile-indexing-method 'alien)
+   (setq projectile-enable-caching t)
    (setq projectile-mode-line "[prj]") ; Prevent lag on cursor move
    (add-hook
     'find-file-hook
     (lambda()
       (local-set-key (kbd "C-c p")
                      (lambda() (interactive)
+                       (message "Enabling projectile...")
                        (local-unset-key (kbd "C-c p"))
                        (when (require 'helm-projectile nil 'noerror)
-                         (projectile-mode)
-                         (helm-projectile-toggle 1))))))))
-  
+                         ;; Enable globally
+                         (projectile-global-mode)
+                         (helm-projectile-toggle 1))
+                       (message nil)))))))
+
 ;;-----------------------
 ;; etags
 ;;-----------------------
