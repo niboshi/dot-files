@@ -11,6 +11,8 @@ FILE_LIST = [
 	(".emacs.d", None),
 	(".tmux.conf", None),
 	(".bashrc", None),
+	(".bash_profile", None),
+	(".profile", None),
 	(".vimrc", None),
 	("bin", ".bindirs/dot-files"),
 ]

@@ -7,72 +7,192 @@ case $- in
 esac
 
 
-UNAME_O=$(uname -o)
+shopt -s checkwinsize    # Update LINES and COLUMNS after each command execution
+shopt -s globstar        # Allows recursive glob with **
 
+# Disable terminal flow control (C-s to freeze output)
+tty -s && stty -ixon
+
+#---------------------------
+# history
+#---------------------------
 HISTSIZE=20000
 HISTCONTROL=ignoreboth:erasedups
-
 shopt -s histappend
-shopt -s checkwinsize
-shopt -s globstar
+
+#---------------------------
+# terminal functions
+# - colors
+# - bold, italic, underline, strike
+#---------------------------
+
+term_reset() {
+    echo -e "\e[0m"
+}
+
+term_fg_rgb() {
+    local r="$1"
+    local g="$2"
+    local b="$3"
+    local color=$((16 + $r * 36 + $g * 6 +$b))
+
+    echo -e "\e[38;5;${color}m"
+}
+
+term_bg_rgb() {
+    local r="$1"
+    local g="$2"
+    local b="$3"
+    local color=$((16 + $r * 36 + $g * 6 +$b))
+
+    echo -e "\e[48;5;${color}m"
+}
+
+term_fg_gray() {
+    local level="$1"
+    [ 0 -le "$level" -a "$level" -lt 24 ] || return 1
+    echo -e "\e[38;5;$((232 + level))m"
+}
+
+term_bg_grayscale() {
+    local level="$1"
+    [ 0 -le "$level" -a "$level" -lt 24 ] || return 1
+    echo -e "\e[48;5;$((232 + level))m"
+}
+
+term_fg_system() {
+    local i="$1"
+    [ 0 -le "$i" -a "$i" -lt 16 ] || return 1
+    echo -e "\e[38;5;${i}m"
+}
+
+term_bg_system() {
+    local i="$1"
+    [ 0 -le "$i" -a "$i" -lt 16 ] || return 1
+    echo -e "\e[48;5;${i}m"
+}
+
+term_bold() {
+    echo -e "\e[1m"
+}
+
+term_italic() {
+    echo -e "\e[3m"
+}
+
+term_underline() {
+    echo -e "\e[4m"
+}
+
+term_strike() {
+    echo -e "\e[9m"
+}
+
+_define_system_color_funcs() {
+    local newline=$'\n'
+    local name
+    local line1
+    local line2
+    local line3
+    local i
+    local system_colors=(black red green yellow blue purple cyan white)
+
+    for i in $(seq 0 "${#system_colors[@]}"); do
+        name="${system_colors[i]}"
+
+        # foreground
+        line1='term_fg_'${name}'() {'
+        line2='echo "$(term_fg_system '$i')"'
+        line3='}'
+        eval "${line1}${newline}${line2}${newline}${line3}"
+
+        # background
+        line1='term_bg_'${name}'() {'
+        line2='echo "$(term_bg_system '$i')"'
+        line3='}'
+        eval "${line1}${newline}${line2}${newline}${line3}"
+
+        # foreground (light)
+        line1='term_fg_light_'${name}'() {'
+        line2='echo "$(term_fg_system '$((8+i))')"'
+        line3='}'
+        eval "${line1}${newline}${line2}${newline}${line3}"
+
+        # background (light)
+        line1='term_bg_light_'${name}'() {'
+        line2='echo "$(term_bg_system '$((8+i))')"'
+        line3='}'
+        eval "${line1}${newline}${line2}${newline}${line3}"
+    done
+}
+
+_define_system_color_funcs
+unset -f _define_system_color_funcs
 
 
-HOST_COLOR=0
-case "$HOSTNAME" in
-    amane)
-        HOST_COLOR=32 # green
-        ;;
-    natsumi)
-        HOST_COLOR=36 # cyan
-        ;;
-    coyote)
-        HOST_COLOR=34 # blue
-        ;;
-    pi)
-        HOST_COLOR=31 # red
-        ;;
-    *)
-        HOST_COLOR=37 # light gray
-        ;;
-esac
-PS1="\[\033[1;31m\]:\[\033[1;35m\]\w\n\[\033[0m\][\[\033[1;${HOST_COLOR}m\]\u\[\033[0m\]@\[\033[1;${HOST_COLOR}m\]\h\[\033[0m\]]\$ "
-unset HOST_COLOR
+#---------------------------
+# prompt
+#---------------------------
+_set_prompt() {
+    local host_color=0
+    case "$HOSTNAME" in
+        amane)
+            host_color=$(term_fg_green)
+            ;;
+        natsumi)
+            host_color=$(term_fg_cyan)
+            ;;
+        coyote)
+            host_color=$(term_fg_blue)
+            ;;
+        pi)
+            host_color=$(term_fg_red)
+            ;;
+        *)
+            host_color=$(term_fg_light_white)
+            ;;
+    esac
 
-if echo "${UNAME_O}" | grep -qi "cygwin"; then
-    echo -e "\e]P44488ff"
-    echo -e "\e]Pc8866ff"
-fi
+    PROMPT_COMMAND='hasjobs=$(jobs -p)'
 
-PATH="$PATH:~/bin"
-PATH="$PATH:~/local/bin"
-for bin in $(find ~/.bindirs -mindepth 1 -maxdepth 1 2>/dev/null); do
-    PATH="$PATH:$bin"
-done
+    local line1="$(term_fg_red):$(term_fg_purple)$(term_bold)\w$(term_reset)"
+    local line2="[${host_color}$(term_bold)\u$(term_reset)@${host_color}$(term_bold)\h$(term_reset)]"'${hasjobs:+(\j jobs)}'"\$ "
+    PS1="${line1}\n${line2}"
+}
 
-### bashrc.d
+_set_prompt
+unset -f _set_prompt
+
+#---------------------------
+# bashrc.d
+#---------------------------
 if [ -d "$HOME/.bashrc.d" ]; then
     for rcfile in $(find $HOME/.bashrc.d -maxdepth 1 ! -path . ! -name ".*" ! -name "_*"); do
         source "$rcfile"
     done
 fi
 
-### Aliases
+unset rcfile
+
+#---------------------------
+# aliases
+#---------------------------
 alias less='less -S'
 alias mysql='mysql --pager="less -S"'
 alias ls='ls --color=auto'
 alias PAGER=less
 
-### LS_COLORS
+alias grep='/bin/grep --color=auto'
+alias utf8='nkf --utf8'
+
+#---------------------------
+# LS_COLORS
+#---------------------------
 extlist="jpg|jpeg|gif|bmp|pbm|pgm|ppm|tga|xbm|xpm|tif|tiff|png|svg|mng|pcx|mov|mpg|mpeg|m2v|mkv|ogm|mp4|m4v|mp4v|vob|qt|nuv|wmv|asf|rm|rmvb|flc|avi|fli|gl|dl|xcf|xwd|yuv|aac|au|flac|mid|midi|mka|mp3|mpc|ogg|ra|wav|flv"
 LS_COLORS_OLD=$LS_COLORS
 LS_COLORS=$(echo $LS_COLORS | sed -re "s/:\*\.(${extlist})=[0-9].;[0-9].//g")
 LS_COLORS=$(echo $LS_COLORS | sed -re "s/(^|:)ow=[^:]+(:|$)/\1ow=01;42\2/")
 
+unset extlist
 
-alias grep='/bin/grep --color=auto'
-
-alias utf8='nkf --utf8'
-
-PYTHONDONTWRITEBYTECODE=1
-
-tty -s && stty -ixon
+#---------------------------
