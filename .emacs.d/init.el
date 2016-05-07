@@ -390,6 +390,9 @@
   (add-hook
    'recentf-dialog-mode-hook
    (lambda()
+     ;; C-g to close recentf buffer
+     (local-set-key (kbd "C-g") (lambda() (interactive) (kill-buffer (current-buffer))))
+     ;; Begin isearch-forward automatically
      (run-with-timer 0.01 nil 'isearch-forward)))
   (recentf-mode 1))
 
