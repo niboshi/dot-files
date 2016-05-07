@@ -183,8 +183,6 @@
            (add-to-list 'default-frame-alist '(alpha 97 95))
            )))))
 
-(redraw-display)
-
 ;;-----------------------
 ;; Show message buffer to the right
 ;;-----------------------
