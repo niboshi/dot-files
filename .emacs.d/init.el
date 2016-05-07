@@ -2,6 +2,9 @@
 ;; Profiling setup
 ;;-----------------------
 (setq niboshi-init-start-time (current-time))
+; How much time did it take to come here?
+(message "(%.03f seconds before init.el)" (float-time (time-subtract niboshi-init-start-time before-init-time)))
+
 (defun niboshi-uptime() (float-time (time-subtract (current-time) niboshi-init-start-time)))
 (defun niboshi-profile (msg fn)
   (let ((start (niboshi-uptime)))
