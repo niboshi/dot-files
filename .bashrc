@@ -95,9 +95,9 @@ _define_system_color_funcs() {
     local line2
     local line3
     local i
-    local system_colors=(black red green yellow blue purple cyan white)
+    local system_colors=(black red green yellow blue magenta cyan white)
 
-    for i in $(seq 0 "${#system_colors[@]}"); do
+    for i in $(seq 0 $((${#system_colors[@]}-1))); do
         name="${system_colors[i]}"
 
         # foreground
