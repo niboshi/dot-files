@@ -95,9 +95,9 @@ _define_system_color_funcs() {
     local line2
     local line3
     local i
-    local system_colors=(black red green yellow blue purple cyan white)
+    local system_colors=(black red green yellow blue magenta cyan white)
 
-    for i in $(seq 0 "${#system_colors[@]}"); do
+    for i in $(seq 0 $((${#system_colors[@]}-1))); do
         name="${system_colors[i]}"
 
         # foreground
@@ -155,7 +155,7 @@ _set_prompt() {
 
     PROMPT_COMMAND='hasjobs=$(jobs -p)'
 
-    local line1="$(term_fg_red):$(term_fg_purple)$(term_bold)\w$(term_reset)"
+    local line1="$(term_fg_red):$(term_fg_magenta)$(term_bold)\w$(term_reset)"
     local line2="[${host_color}$(term_bold)\u$(term_reset)@${host_color}$(term_bold)\h$(term_reset)]"'${hasjobs:+(\j jobs)}'"\$ "
     PS1="${line1}\n${line2}"
 }
