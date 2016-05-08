@@ -134,30 +134,32 @@ unset -f _define_system_color_funcs
 # prompt
 #---------------------------
 _set_prompt() {
-    local host_color=0
     case "$HOSTNAME" in
         amane)
-            host_color=$(term_fg_green)
+            host_color=green
             ;;
         natsumi)
-            host_color=$(term_fg_cyan)
+            host_color=cyan
             ;;
         coyote)
-            host_color=$(term_fg_blue)
+            host_color=blue
             ;;
         pi)
-            host_color=$(term_fg_red)
+            host_color=red
             ;;
         *)
-            host_color=$(term_fg_light_white)
+            host_color=white
             ;;
     esac
 
+    local host_color_expr='$(term_fg_'${host_color}')'
     PROMPT_COMMAND='hasjobs=$(jobs -p)'
 
     local line1="$(term_fg_red):$(term_fg_purple)$(term_bold)\w$(term_reset)"
-    local line2="[${host_color}$(term_bold)\u$(term_reset)@${host_color}$(term_bold)\h$(term_reset)]"'${hasjobs:+(\j jobs)}'"\$ "
+    local line2="[${host_color_expr}$(term_bold)\u$(term_reset)@${host_color_expr}$(term_bold)\h$(term_reset)]"'${hasjobs:+(\j jobs)}'"\$ "
     PS1="${line1}\n${line2}"
+
+    export host_color
 }
 
 _set_prompt
