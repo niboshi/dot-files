@@ -198,3 +198,22 @@ LS_COLORS=$(echo $LS_COLORS | sed -re "s/(^|:)ow=[^:]+(:|$)/\1ow=01;42\2/")
 unset extlist
 
 #---------------------------
+# Graph
+#---------------------------
+put_graph() {
+    local val="$1"
+    local max="$2"
+    local chars=(" " "\u2581" "\u2582" "\u2583" "\u2584" "\u2585" "\u2586"  "\u2587" "\u2588")
+    local i=$((val * ${#chars[@]} / (max+1)))
+    [ 0 -le "$val" -a "$val" -le "$max" ] || return 1
+    echo -e "${chars[i]}"
+}
+
+put_mem_graph() {
+    local value
+    local total=$(cat /proc/meminfo | grep ^MemTotal     | sed -r 's/^\w+: +([0-9]+) kB$/\1/')
+    local avail=$(cat /proc/meminfo | grep ^MemAvailable | sed -r 's/^\w+: +([0-9]+) kB$/\1/')
+    put_graph $((total-avail)) $total
+}
+
+#---------------------------
