@@ -13,23 +13,42 @@
       (message "%.03f[%.03f] seconds: %s" end (- end start) msg))))
 
 ;;-----------------------
+;; load path
+;;-----------------------
+(add-to-list 'load-path "~/.emacs.d/lisp")
+
+;;-----------------------
 ;; Custom variable
 ;;-----------------------
 (setq niboshi-default-background "black"
       niboshi-default-foreground "#cccccc")
 
 ;;-----------------------
-;; niboshi-setup
+;; niboshi common functions
 ;;-----------------------
+;; niboshi-setup
 (defun niboshi-setup()
   (interactive)
-  (niboshi-install-packages))
+  (niboshi-install-packages)
+  (jedi:install-server))
 
-;;-----------------------
-(add-to-list 'load-path "~/.emacs.d/lisp")
-
+;; niboshi-make-hotkey
 (setq niboshi-hotkey-prefix (kbd "C-c ;"))
 (defun niboshi-make-hotkey (k) (concat niboshi-hotkey-prefix (kbd k)))
+
+;; niboshi-add-path
+(defun niboshi-add-path(path)
+  (progn
+    ;; Environment variable
+    (setenv "PATH" (concat path ";" (getenv "PATH")))
+    ;; exec-path variable
+    (let ((path_posix (replace-regexp-in-string "\\\\" "/" path)))
+      (setq exec-path (append `(,path_posix) exec-path)))))
+
+;; niboshi-add-paths
+(defun niboshi-add-paths(paths)
+  (dolist (path paths)
+    (niboshi-add-path path)))
 
 ;;-----------------------
 ;; Disable original features
