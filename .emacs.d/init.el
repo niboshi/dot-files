@@ -265,7 +265,10 @@
     (niboshi-bring-message-buffer-to-front)
     (message "--- eval")
     (call-interactively eval-func)
-    (message "OK")))
+    (message "OK")
+    (with-current-buffer "*Messages*"
+      (goto-char (point-max)))))
+
 
 (global-set-key (kbd "C-c e e") (lambda() (interactive) (niboshi-eval-wrapper 'eval-expression)))
 (global-set-key (kbd "C-c e r") (lambda() (interactive) (niboshi-eval-wrapper 'eval-region)))
