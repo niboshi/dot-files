@@ -326,11 +326,19 @@
 
 
 ;;-----------------------
-;; bs-show
+;; buffer-menu
 ;;-----------------------
-(use-package bs-show
-  :commands bs-show
-  :bind (("C-x C-b" . bs-show)))
+(defun niboshi-buffer-menu-other-window()
+  (interactive)
+  (setq niboshi-buffer-menu-other-window-old-buffer (get-buffer-window))
+  (add-hook 'Buffer-menu-mode-hook
+            (lambda()
+              (local-set-key (kbd "C-g") (lambda() (interactive)
+                                           (kill-buffer (current-buffer))
+                                           (select-window niboshi-buffer-menu-other-window-old-buffer)
+                                           (setq niboshi-buffer-menu-other-window-old-buffer nil)))))
+  (buffer-menu-other-window))
+(global-set-key (kbd "C-x C-b") 'niboshi-buffer-menu-other-window)
 
 ;;-----------------------
 ;; dtrt-indent
