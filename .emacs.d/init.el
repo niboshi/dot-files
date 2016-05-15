@@ -120,6 +120,13 @@
 (global-set-key (kbd "M-p") (lambda () (interactive) (scroll-down-command 1)))
 (global-set-key (kbd "M-n") (lambda () (interactive) (scroll-up-command 1)))
 
+;; Move cursor position without changing it's apparetn position in screen
+(global-set-key (kbd "M-P") (lambda () (interactive) (previous-line) (scroll-down-command 1)))
+(global-set-key (kbd "M-N") (lambda () (interactive) (next-line) (scroll-up-command 1)))
+
+;; Page scroll without changing the cursor's apparent position in screen
+(setq scroll-preserve-screen-position t)
+
 ;;-----------------------
 ;; Essential
 ;;-----------------------
