@@ -283,6 +283,7 @@
 
 ;; Encoding
 (prefer-coding-system 'utf-8)
+(setq default-buffer-file-coding-system 'utf-8-unix)
 
 ;; Enable CamelCase-aware word editing.
 (global-subword-mode 1)
