@@ -357,7 +357,9 @@
             (c-set-offset 'arglist-intro '++)
             (setq indent-tabs-mode t)
             (which-function-mode t) ; show function name
-            (if (fboundp 'whitespace-mode) (whitespace-mode t))))
+            (if (fboundp 'whitespace-mode) (whitespace-mode t))
+            (dtrt-indent-mode t)
+            (ggtags-mode)))
 
 (add-hook 'python-mode-hook
           (lambda ()
@@ -366,7 +368,8 @@
             (setq python-indent 4)
             (which-function-mode t) ; show function name
             (if (fboundp 'whitespace-mode) (whitespace-mode t))
-            (dtrt-indent-mode t)))
+            (dtrt-indent-mode t)
+            (ggtags-mode)))
 
 ;;-----------------------
 ;; ido-mode (Interactive buffer switch, etc.)
@@ -494,6 +497,24 @@
       (select-window old-win))))
 
 ;;-----------------------
+;; Swap windows
+;;-----------------------
+;; Original: https://www.emacswiki.org/emacs/TransposeWindows
+(defun niboshi-transpose-windows (arg)
+  "Transpose the buffers shown in two windows."
+  (interactive "p")
+  (let ((selector (if (>= arg 0) 'next-window 'previous-window)))
+    (while (/= arg 0)
+      (let ((this-win (window-buffer))
+            (next-win (window-buffer (funcall selector))))
+        (set-window-buffer (selected-window) next-win)
+        (set-window-buffer (funcall selector) this-win)
+        (select-window (funcall selector)))
+      (setq arg (if (plusp arg) (1- arg) (1+ arg))))))
+
+(global-set-key (niboshi-make-hotkey "x") 'niboshi-transpose-windows)
+
+;;-----------------------
 ;; ggtags
 ;;-----------------------
 (use-package ggtags
@@ -559,13 +580,13 @@
 ;; Projectile
 ;;-----------------------
 ;; Trigger C-c p to enable projectile-mode.
-(global-set-key (kbd "C-c p") (lambda() (interactive)
+(global-set-key (kbd "C-c p p") (lambda() (interactive)
                                 (message "Enabling projectile...")
-                                (global-unset-key (kbd "C-c p"))
+                                (global-unset-key (kbd "C-c p p"))
                                 ;; Enable globally
                                 (projectile-global-mode)
                                 (helm-projectile-toggle 1)
-                                (message nil)))
+                                (message "projectile enabled.")))
 
 (use-package projectile
   :commands projectile-global-mode
