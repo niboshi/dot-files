@@ -4,3 +4,9 @@
 /recentf*
 /lisp
 /elpa
+/.python-environments
+/ido.last
+/eshell
+/tramp
+/projectile*
+/ac-comphist.dat
