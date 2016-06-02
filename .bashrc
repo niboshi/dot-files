@@ -155,8 +155,15 @@ _set_prompt() {
     local host_color_expr='\[$(term_fg_'${host_color}')\]'
     PROMPT_COMMAND='hasjobs=$(jobs -p)'
 
+    local platform
+    if [ 1 == "$NIBOSHI_IS_CYGWIN" ]; then
+        platform="$(term_fg_yellow)(cygwin)$(term_reset)"
+    else
+        platform=
+    fi
+
     local line1="\[$(term_fg_red)\]:\[$(term_fg_magenta)\]\[$(term_bold)\]\w\[$(term_reset)\]"
-    local line2="[${host_color_expr}\[$(term_bold)\]\u\[$(term_reset)\]@${host_color_expr}\[$(term_bold)\]\h\[$(term_reset)\]]"'${hasjobs:+$(term_fg_blue)(\j jobs)$(term_reset)}'"\$ "
+    local line2="[${host_color_expr}\[$(term_bold)\]\u\[$(term_reset)\]@${host_color_expr}\[$(term_bold)\]\h\[$(term_reset)\]]$platform"'${hasjobs:+$(term_fg_blue)(\j jobs)$(term_reset)}'"\$ "
     PS1="${line1}\n${line2}"
 
     export host_color

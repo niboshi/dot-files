@@ -3,6 +3,16 @@ export LC_ALL=C.UTF-8
 
 export PYTHONDONTWRITEBYTECODE=1
 
+if [ ! -z "$DISPLAY" ]; then
+    setxkbmap -layout us -option ctrl:nocaps
+fi
+
+if [ "$(uname -o)" == "Cygwin" ]; then
+    export NIBOSHI_IS_CYGWIN=1
+else
+    export NIBOSHI_IS_CYGWIN=0
+fi
+
 #---------------------------
 # PATH
 #---------------------------

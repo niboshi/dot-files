@@ -1,7 +1,7 @@
 #---------------------------
 # mintty color
 #---------------------------
-if [ "$(uname -o)" == "Cygwin" ]; then
+if [ 1 == "$NIBOSHI_IS_CYGWIN" ]; then
     palette=(
         # black  red      green    yellow   blue     magenta  cyan     white
         000000   cd0000   00cd00   cdcd00   1e90ff   cd00cd   00cdcd   e5e5e5
