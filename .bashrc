@@ -156,7 +156,7 @@ _set_prompt() {
     PROMPT_COMMAND='hasjobs=$(jobs -p)'
 
     local line1="\[$(term_fg_red)\]:\[$(term_fg_magenta)\]\[$(term_bold)\]\w\[$(term_reset)\]"
-    local line2="[${host_color_expr}\[$(term_bold)\]\u\[$(term_reset)\]@${host_color_expr}\[$(term_bold)\]\h\[$(term_reset)\]]"'${hasjobs:+(\j jobs)}'"\$ "
+    local line2="[${host_color_expr}\[$(term_bold)\]\u\[$(term_reset)\]@${host_color_expr}\[$(term_bold)\]\h\[$(term_reset)\]]"'${hasjobs:+$(term_fg_blue)(\j jobs)$(term_reset)}'"\$ "
     PS1="${line1}\n${line2}"
 
     export host_color
