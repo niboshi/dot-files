@@ -452,8 +452,8 @@
         (set-face-attribute 'whitespace-empty nil :background "#200000" :foreground nil)
         (set-face-attribute 'whitespace-trailing nil :background "#200000" :foreground nil))
     (progn
-      (set-face-attribute 'whitespace-tab nil :background niboshi-default-background :foreground "brightblack")
-      (set-face-attribute 'whitespace-newline nil :background niboshi-default-background :foreground "brightblack")
+      (set-face-attribute 'whitespace-tab nil :background niboshi-default-background :foreground "color-237")
+      (set-face-attribute 'whitespace-newline nil :background niboshi-default-background :foreground "color-237")
       (set-face-attribute 'whitespace-empty nil :background "red" :foreground nil)
       (set-face-attribute 'whitespace-trailing nil :background "red" :foreground nil)
       )))
