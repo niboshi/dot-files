@@ -34,7 +34,8 @@
 
 ;; niboshi-make-hotkey
 (setq niboshi-hotkey-prefix (kbd "C-c ;"))
-(defun niboshi-make-hotkey (k) (concat niboshi-hotkey-prefix (kbd k)))
+(defun niboshi-make-hotkey  (k) (concat niboshi-hotkey-prefix (kbd k)))
+(defun niboshi-make-hotkey- (k) (key-description (concat niboshi-hotkey-prefix (kbd k))))
 
 ;; niboshi-add-path
 (defun niboshi-add-path(path)
@@ -164,6 +165,7 @@
     (ignore-errors (package-install 'dtrt-indent)) ; auto-detect indentation
     (ignore-errors (package-install 'magit))
     (ignore-errors (package-install 'markdown-mode))
+    (ignore-errors (package-install 'idomenu))
     (message "niboshi-setup: Finished")
     ))
 
@@ -643,6 +645,13 @@
          ("M-I" . helm-swoop-back-to-last-point)
          ("C-c M-i" . helm-multi-swoop)
          ("C-x M-i" . helm-multi-swoop-all))
+)
+
+;;-----------------------
+;; idomenu
+;;-----------------------
+(use-package idomenu
+  :bind (("C-c ; i" . idomenu))
 )
 
 ;;-----------------------
