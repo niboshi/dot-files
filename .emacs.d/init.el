@@ -183,6 +183,7 @@
     (ignore-errors (package-install 'idomenu))
     (ignore-errors (package-install 'buffer-move))
     (ignore-errors (package-install 'fill-column-indicator))
+    (ignore-errors (package-install 'ido-vertical-mode))
     (message "niboshi-setup: Finished")
     ))
 
@@ -392,26 +393,37 @@
 ;;-----------------------
 ;; ido-mode (Interactive buffer switch, etc.)
 ;;-----------------------
-(niboshi-profile
- "ido"
- (lambda()
-   (progn
-     (ido-mode nil)
-     (setq ido-enable-prefix nil)
-     (setq ido-enable-flex-matching t)
-     (setq ido-case-fold t) ; Ignore case
-     (setq ido-use-virtual-buffers t)
-     ;;-------------------------------
-     ;; Display candidates vertically
-     ;;-------------------------------
-     (setq ido-decorations (quote ("\n-> " "" "\n   " "\n   ..." "[" "]" " [No match]" " [Matched]" " [Not readable]" " [Too big]" " [Confirm]")))
-     (defun ido-disable-line-truncation () (set (make-local-variable 'truncate-lines) nil))
-     (add-hook 'ido-minibuffer-setup-hook 'ido-disable-line-truncation)
-     (defun ido-define-keys () ;; C-n/p is more intuitive in vertical layout
-       (define-key ido-completion-map (kbd "C-n") 'ido-next-match)
-       (define-key ido-completion-map (kbd "C-p") 'ido-prev-match))
-     (add-hook 'ido-setup-hook 'ido-define-keys)
-     )))
+(use-package ido
+  :commands ido-mode
+  :init
+  (setq ido-enable-prefix nil)
+  (setq ido-enable-flex-matching t)
+  (setq ido-case-fold t) ; Ignore case
+  (setq ido-use-virtual-buffers t)
+  (ido-mode t)
+  :config
+  (ido-vertical-mode t)
+
+  ;; http://emacs.stackexchange.com/questions/3063/recently-opened-files-in-ido-mode
+  (use-package recentf)
+  (defun ido-recentf-open ()
+    "Use `ido-completing-read' to find a recent file."
+    (interactive)
+    (if (find-file (ido-completing-read "Find recent file: " recentf-list))
+        (message "Opening file...")
+      (message "Aborting")))
+  (global-set-key (kbd "C-x C-r") 'ido-recentf-open)
+)
+
+(use-package ido-vertical-mode
+  :commands ido-vertical-mode
+  :config
+  (add-hook 'ido-setup-hook
+            (lambda()
+              (define-key ido-completion-map (kbd "C-n") 'ido-next-match)
+              (define-key ido-completion-map (kbd "C-p") 'ido-prev-match)
+              (define-key ido-completion-map (kbd "<down>") 'ido-next-match)
+              (define-key ido-completion-map (kbd "<up>") 'ido-prev-match))))
 
 ;;-----------------------
 ;; Open explorer
@@ -448,7 +460,6 @@
 ;;-----------------------
 (use-package recentf
   :commands recentf-open-files
-  :bind (("C-x C-r" . recentf-open-files))
   :config
   (setq recentf-save-file (concat "~/.emacs.d/recentf-" system-name))
   (setq recentf-keep '(file-remote-p file-readable-p))
