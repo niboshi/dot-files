@@ -1,0 +1,49 @@
+#!/usr/bin/env bash
+
+term_color() {
+    local i=$1
+    echo -ne "\e[38;5;${i}m"
+}
+
+TMUX_COLORS=0
+TERM_COLORS=0
+args=()
+
+while [ $# -gt 0 ]; do
+    o="$1"
+    shift
+    case "$o" in
+        "--term-colors")
+            TERM_COLORS=1
+            ;;
+        "--tmux-colors")
+            TMUX_COLORS=1
+            ;;
+        "-*")
+            echo "Unknown argument: $o" >&2
+            exit 1
+            ;;
+        *)
+            args=("${args[@]}" "$o")
+            ;;
+    esac
+done
+
+
+val="${args[0]}"
+max="${args[1]}"
+[ 0 -le "$val" -a "$val" -le "$max" ] || return 1
+
+chars=("_" "\u2581" "\u2582" "\u2583" "\u2584" "\u2585" "\u2586" "\u2587" "\u2588")
+colors=(252 51 81 111 141 171 201 199 196)
+i=$((val * ${#chars[@]} / (max+1)))
+
+color=
+
+if [ $TERM_COLORS -eq 1 ]; then
+    color=$(term_color ${colors[i]})
+elif [ $TMUX_COLORS -eq 1 ]; then
+    color="#[fg=colour${colors[i]}]"
+fi
+
+echo -ne "$color${chars[i]}"
