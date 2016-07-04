@@ -1,3 +1,7 @@
+if [ -f ~/.profile ]; then
+    source ~/.profile
+fi
+
 #---------------------------
 # mintty color
 #---------------------------
@@ -19,10 +23,6 @@ if [ 1 == "$NIBOSHI_IS_CYGWIN" ]; then
 fi
 
 #---------------------------
-
-if [ -f ~/.profile ]; then
-    source ~/.profile
-fi
 
 if [ -f ~/.bashrc ]; then
     source ~/.bashrc
