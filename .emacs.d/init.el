@@ -520,6 +520,7 @@
 (use-package ggtags
   :commands ggtags-mode
   :init
+  (setq ggtags-oversize-limit t)
   (add-hook
    'ggtags-mode-hook
    (lambda()
