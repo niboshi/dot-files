@@ -29,8 +29,7 @@
 ;; niboshi-setup
 (defun niboshi-setup()
   (interactive)
-  (niboshi-install-packages)
-  (jedi:install-server))
+  (niboshi-install-packages))
 
 ;; niboshi-make-hotkey
 (setq niboshi-hotkey-prefix (kbd "C-c ;"))
@@ -104,11 +103,21 @@
 ;; Move to previous window (opposite of C-x o)
 (global-set-key (kbd "C-x O") (kbd "C-- C-x o"))
 
-;; Move window cursor by arrows.
+;; Move window *CURSOR* by arrows.
 (global-set-key (kbd "C-x <up>")    'windmove-up)
 (global-set-key (kbd "C-x <down>")  'windmove-down)
 (global-set-key (kbd "C-x <left>")  'windmove-left)
 (global-set-key (kbd "C-x <right>") 'windmove-right)
+
+;; Move window *POSITION* by arrows.
+(global-set-key (kbd "C-x S-<up>")    'buf-move-up)
+(global-set-key (kbd "C-x S-<down>")  'buf-move-down)
+(global-set-key (kbd "C-x S-<left>")  'buf-move-left)
+(global-set-key (kbd "C-x S-<right>") 'buf-move-right)
+
+;; Buffer rotation
+(global-set-key (kbd "C-x <end>")  'bury-buffer)
+(global-set-key (kbd "C-x <home>") 'unbury-buffer)
 
 ;; C-h
 (define-key key-translation-map (kbd "C-h") "\C-?")
@@ -118,15 +127,21 @@
 (global-set-key (kbd "M-h") 'backward-kill-word)
 
 ;; Scroll without moving cursor
-(global-set-key (kbd "M-p") (lambda () (interactive) (scroll-down-command 1)))
-(global-set-key (kbd "M-n") (lambda () (interactive) (scroll-up-command 1)))
+(global-set-key (kbd "M-P") (lambda () (interactive) (scroll-down-command 1)))
+(global-set-key (kbd "M-N") (lambda () (interactive) (scroll-up-command 1)))
 
 ;; Move cursor position without changing it's apparetn position in screen
-(global-set-key (kbd "M-P") (lambda () (interactive) (previous-line) (scroll-down-command 1)))
-(global-set-key (kbd "M-N") (lambda () (interactive) (next-line) (scroll-up-command 1)))
+(global-set-key (kbd "M-p") (lambda () (interactive) (previous-line) (scroll-down-command 1)))
+(global-set-key (kbd "M-n") (lambda () (interactive) (next-line) (scroll-up-command 1)))
 
 ;; Page scroll without changing the cursor's apparent position in screen
 (setq scroll-preserve-screen-position t)
+
+;; Use regex search by default
+(global-set-key (kbd "C-s") 'isearch-forward-regexp)
+(global-set-key (kbd "C-r") 'isearch-backward-regexp)
+(global-set-key (kbd "C-M-s") 'isearch-forward)
+(global-set-key (kbd "C-M-r") 'isearch-forward)
 
 ;;-----------------------
 ;; Essential
@@ -166,6 +181,8 @@
     (ignore-errors (package-install 'magit))
     (ignore-errors (package-install 'markdown-mode))
     (ignore-errors (package-install 'idomenu))
+    (ignore-errors (package-install 'buffer-move))
+    (ignore-errors (package-install 'fill-column-indicator))
     (message "niboshi-setup: Finished")
     ))
 
@@ -316,17 +333,16 @@
 ;; fill-column-indicator
 ;;-----------------------
 (use-package fill-column-indicator
-  :if (display-graphic-p)
   :commands fci-mode
   :init
-  (message "init fill-column-indicator")
   (add-hook 'c-mode-common-hook 'fci-mode)
+  (add-hook 'python-mode-hook 'fci-mode)
   :config
-  (message "config fill-column-indicator")
   (setq-default fci-always-use-textual-rule t) ; Default behaviour (draw line by image) causes line height problem.
   (setq-default fci-rule-column 80)
-  (setq-default fci-rule-color "gray11"))
-
+  (if (display-graphic-p)
+      (setq-default fci-rule-color "gray11")
+    (setq-default fci-rule-color "color-234")))
 
 ;;-----------------------
 ;; buffer-menu
@@ -385,6 +401,16 @@
      (setq ido-enable-flex-matching t)
      (setq ido-case-fold t) ; Ignore case
      (setq ido-use-virtual-buffers t)
+     ;;-------------------------------
+     ;; Display candidates vertically
+     ;;-------------------------------
+     (setq ido-decorations (quote ("\n-> " "" "\n   " "\n   ..." "[" "]" " [No match]" " [Matched]" " [Not readable]" " [Too big]" " [Confirm]")))
+     (defun ido-disable-line-truncation () (set (make-local-variable 'truncate-lines) nil))
+     (add-hook 'ido-minibuffer-setup-hook 'ido-disable-line-truncation)
+     (defun ido-define-keys () ;; C-n/p is more intuitive in vertical layout
+       (define-key ido-completion-map (kbd "C-n") 'ido-next-match)
+       (define-key ido-completion-map (kbd "C-p") 'ido-prev-match))
+     (add-hook 'ido-setup-hook 'ido-define-keys)
      )))
 
 ;;-----------------------
@@ -436,7 +462,7 @@
      ;; C-g to close recentf buffer
      (local-set-key (kbd "C-g") (lambda() (interactive) (kill-buffer (current-buffer))))
      ;; Begin isearch-forward automatically
-     (run-with-timer 0.01 nil 'isearch-forward)))
+     (run-with-timer 0.01 nil 'isearch-forward-regexp)))
   (recentf-mode 1))
 
 ;;-----------------------
@@ -445,14 +471,16 @@
 (use-package whitespace
   :commands whitespace-mode
   :bind (("C-c = w" . whitespace-mode))
+  :init
+  (add-hook 'find-file-hook (lambda() (whitespace-mode t)))
   :config
-  (setq whitespace-style '(empty face tabs newline tab-mark newline-mark))
+  (setq whitespace-style '(empty face tabs newline tab-mark newline-mark trailing))
   (if (display-graphic-p)
       (progn
         (set-face-attribute 'whitespace-tab nil :background niboshi-default-background :foreground "#333333")
         (set-face-attribute 'whitespace-newline nil :background niboshi-default-background :foreground "#333333")
         (set-face-attribute 'whitespace-empty nil :background "#200000" :foreground nil)
-        (set-face-attribute 'whitespace-trailing nil :background "#200000" :foreground nil))
+        (set-face-attribute 'whitespace-trailing nil :background "#ff0000" :foreground nil))
     (progn
       (set-face-attribute 'whitespace-tab nil :background niboshi-default-background :foreground "color-237")
       (set-face-attribute 'whitespace-newline nil :background niboshi-default-background :foreground "color-237")
@@ -466,7 +494,7 @@
  (defun niboshi-ring-bell-function ()
    (invert-face 'mode-line)
    (run-with-timer 0.1 nil 'invert-face 'mode-line))
- 
+
  (setq visible-bell nil
        ring-bell-function 'niboshi-ring-bell-function)
 
@@ -548,7 +576,7 @@
 (global-set-key (kbd "C-c c n") 'compilation-next-error)
 (global-set-key (kbd "C-c c p") 'compilation-previous-error)
 (add-hook 'compilation-mode-hook
-          (lambda () 
+          (lambda ()
             (progn
               (setq compilation-scroll-output 'first-error)
               (setq complation-auto-jump-to-first-error t)
@@ -611,7 +639,7 @@
   (interactive
    (list (read-directory-name "Directory: ")
          (read-string "File name pattern: " "**/*.py" nil nil)))
-  (eshell-command 
+  (eshell-command
    (format "cd %s ; etags %s" dir-name filename-pattern)))
 
 
