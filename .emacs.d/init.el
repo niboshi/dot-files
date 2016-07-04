@@ -680,6 +680,19 @@
                      (t nil)))))))
 
 ;;-----------------------
+;; switch-to-minibuffer
+;;-----------------------
+(defun niboshi-switch-to-minibuffer ()
+  "Switch to minibuffer window."
+  (interactive)
+  (let ((win (active-minibuffer-window)))
+    (if win
+        (select-window win)
+      (message "Minibuffer is not active"))))
+
+(global-set-key (niboshi-make-hotkey "m") 'niboshi-switch-to-minibuffer)
+
+;;-----------------------
 ;; Tips
 ;;-----------------------
 (add-hook 'after-init-hook
