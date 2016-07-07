@@ -90,6 +90,9 @@
     ;; Kill a word
     (niboshi-set-key (kbd "M-h") 'backward-kill-word)
 
+    ;; Move cursor to the middle of screen
+    (niboshi-set-key (kbd "C-c .") 'recenter)
+
     ;; Move cursor position without changing it's apparetn position in screen
     (niboshi-set-key (kbd "M-p") (lambda () (interactive) (previous-line) (scroll-down-command 1)))
     (niboshi-set-key (kbd "M-n") (lambda () (interactive) (next-line) (scroll-up-command 1)))
