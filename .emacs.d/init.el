@@ -1,4 +1,4 @@
-;;-----------------------
+ ;;-----------------------
 ;; Profiling setup
 ;;-----------------------
 (setq niboshi-init-start-time (current-time))
@@ -50,6 +50,14 @@
   (dolist (path paths)
     (niboshi-add-path path)))
 
+;; Custom key map minor mode
+(defvar niboshi-keys-minor-mode-map
+  (make-sparse-keymap)
+  "niboshi-keys-minor-mode keymap.")
+
+(defun niboshi-set-key (k fn)
+  (define-key niboshi-keys-minor-mode-map k fn))
+
 ;;-----------------------
 ;; Disable original features
 ;;-----------------------
@@ -61,87 +69,117 @@
 ;; Disable ALT-key hook, to re-enable Windows system menu
 (setq w32-pass-alt-to-system 1)
 
-;; Disable IME hotkey
-(global-unset-key (kbd "C-\\"))
-
-;; Disable mouse commands
-(global-set-key [down-mouse-2] 'ignore)
-(global-set-key [mouse-2] 'ignore)
-(global-set-key [down-mouse-3] 'ignore)
-(global-set-key [mouse-3] 'ignore)
-
-(global-set-key [S-down-mouse-1] 'ignore)
-(global-set-key [S-mouse-1] 'ignore)
-(global-set-key [S-down-mouse-2] 'ignore)
-(global-set-key [S-mouse-2] 'ignore)
-(global-set-key [S-down-mouse-3] 'ignore)
-(global-set-key [S-mouse-3] 'ignore)
-
-(global-set-key [C-down-mouse-1] 'ignore)
-(global-set-key [C-mouse-1] 'ignore)
-(global-set-key [C-down-mouse-2] 'ignore)
-(global-set-key [C-mouse-2] 'ignore)
-(global-set-key [C-down-mouse-3] 'ignore)
-(global-set-key [C-mouse-3] 'ignore)
-
-(global-set-key [M-down-mouse-1] 'ignore)
-(global-set-key [M-mouse-1] 'ignore)
-(global-set-key [M-down-mouse-2] 'ignore)
-(global-set-key [M-mouse-2] 'ignore)
-(global-set-key [M-down-mouse-3] 'ignore)
-(global-set-key [M-mouse-3] 'ignore)
-
-(global-set-key [mouse-4] (lambda () (interactive) (scroll-down-command 1)))
-(global-set-key [mouse-5] (lambda () (interactive) (scroll-up-command 1)))
-
 ;;-----------------------
 ;; Essential keybinding
 ;;-----------------------
-;; goto-line
-(global-set-key (kbd "C-l") 'goto-line)
-
-;; Move to previous window (opposite of C-x o)
-(global-set-key (kbd "C-x O") (kbd "C-- C-x o"))
-
-;; Move window *CURSOR* by arrows.
-(global-set-key (kbd "C-x <up>")    'windmove-up)
-(global-set-key (kbd "C-x <down>")  'windmove-down)
-(global-set-key (kbd "C-x <left>")  'windmove-left)
-(global-set-key (kbd "C-x <right>") 'windmove-right)
-
-;; Move window *POSITION* by arrows.
-(global-set-key (kbd "C-x S-<up>")    'buf-move-up)
-(global-set-key (kbd "C-x S-<down>")  'buf-move-down)
-(global-set-key (kbd "C-x S-<left>")  'buf-move-left)
-(global-set-key (kbd "C-x S-<right>") 'buf-move-right)
-
-;; Buffer rotation
-(global-set-key (kbd "C-x <end>")  'bury-buffer)
-(global-set-key (kbd "C-x <home>") 'unbury-buffer)
 
 ;; C-h
 (define-key key-translation-map (kbd "C-h") "\C-?")
 (setq backward-delete-char-untabify-method nil) ; This prevents C-h from converting a tab to spaces.
 
-;; Kill a word
-(global-set-key (kbd "M-h") 'backward-kill-word)
-
-;; Scroll without moving cursor
-(global-set-key (kbd "M-P") (lambda () (interactive) (scroll-down-command 1)))
-(global-set-key (kbd "M-N") (lambda () (interactive) (scroll-up-command 1)))
-
-;; Move cursor position without changing it's apparetn position in screen
-(global-set-key (kbd "M-p") (lambda () (interactive) (previous-line) (scroll-down-command 1)))
-(global-set-key (kbd "M-n") (lambda () (interactive) (next-line) (scroll-up-command 1)))
-
 ;; Page scroll without changing the cursor's apparent position in screen
 (setq scroll-preserve-screen-position t)
 
-;; Use regex search by default
-(global-set-key (kbd "C-s") 'isearch-forward-regexp)
-(global-set-key (kbd "C-r") 'isearch-backward-regexp)
-(global-set-key (kbd "C-M-s") 'isearch-forward)
-(global-set-key (kbd "C-M-r") 'isearch-forward)
+(when t
+    ;; goto-line
+    (niboshi-set-key (kbd "C-l") 'goto-line)
+
+    ;; Disable IME hotkey
+    (niboshi-set-key (kbd "C-\\") 'ignore)
+
+    ;; Kill a word
+    (niboshi-set-key (kbd "M-h") 'backward-kill-word)
+
+    ;; Move cursor position without changing it's apparetn position in screen
+    (niboshi-set-key (kbd "M-p") (lambda () (interactive) (previous-line) (scroll-down-command 1)))
+    (niboshi-set-key (kbd "M-n") (lambda () (interactive) (next-line) (scroll-up-command 1)))
+
+    ;; Scroll without moving cursor
+    (niboshi-set-key (kbd "M-P") (lambda () (interactive) (scroll-down-command 1)))
+    (niboshi-set-key (kbd "M-N") (lambda () (interactive) (scroll-up-command 1)))
+
+    ;; Next/previous match
+    (niboshi-set-key (kbd "C-S-p") 'previous-error)
+    (niboshi-set-key (kbd "C-S-n") 'next-error)
+
+    ;; Use regex search by default
+    (niboshi-set-key (kbd "C-s") 'isearch-forward-regexp)
+    (niboshi-set-key (kbd "C-r") 'isearch-backward-regexp)
+    (niboshi-set-key (kbd "C-M-s") 'isearch-forward)
+    (niboshi-set-key (kbd "C-M-r") 'isearch-forward)
+
+    ;; Move to previous window (opposite of C-x o)
+    (niboshi-set-key (kbd "C-x O") (kbd "C-- C-x o"))
+
+    ;; Move window *CURSOR* by arrows.
+    (niboshi-set-key (kbd "C-x <up>")    'windmove-up)
+    (niboshi-set-key (kbd "C-x <down>")  'windmove-down)
+    (niboshi-set-key (kbd "C-x <left>")  'windmove-left)
+    (niboshi-set-key (kbd "C-x <right>") 'windmove-right)
+
+    ;; Move window *POSITION* by arrows.
+    (niboshi-set-key (kbd "C-x S-<up>")    'buf-move-up)
+    (niboshi-set-key (kbd "C-x S-<down>")  'buf-move-down)
+    (niboshi-set-key (kbd "C-x S-<left>")  'buf-move-left)
+    (niboshi-set-key (kbd "C-x S-<right>") 'buf-move-right)
+
+    ;; Buffer rotation
+    (niboshi-set-key (kbd "C-x <end>")  'bury-buffer)
+    (niboshi-set-key (kbd "C-x <home>") 'unbury-buffer)
+
+    ;; Disable mouse commands
+    (niboshi-set-key [down-mouse-2] 'ignore)
+    (niboshi-set-key [mouse-2] 'ignore)
+    (niboshi-set-key [down-mouse-3] 'ignore)
+    (niboshi-set-key [mouse-3] 'ignore)
+
+    (niboshi-set-key [S-down-mouse-1] 'ignore)
+    (niboshi-set-key [S-mouse-1] 'ignore)
+    (niboshi-set-key [S-down-mouse-2] 'ignore)
+    (niboshi-set-key [S-mouse-2] 'ignore)
+    (niboshi-set-key [S-down-mouse-3] 'ignore)
+    (niboshi-set-key [S-mouse-3] 'ignore)
+
+    (niboshi-set-key [C-down-mouse-1] 'ignore)
+    (niboshi-set-key [C-mouse-1] 'ignore)
+    (niboshi-set-key [C-down-mouse-2] 'ignore)
+    (niboshi-set-key [C-mouse-2] 'ignore)
+    (niboshi-set-key [C-down-mouse-3] 'ignore)
+    (niboshi-set-key [C-mouse-3] 'ignore)
+
+    (niboshi-set-key [M-down-mouse-1] 'ignore)
+    (niboshi-set-key [M-mouse-1] 'ignore)
+    (niboshi-set-key [M-down-mouse-2] 'ignore)
+    (niboshi-set-key [M-mouse-2] 'ignore)
+    (niboshi-set-key [M-down-mouse-3] 'ignore)
+    (niboshi-set-key [M-mouse-3] 'ignore)
+
+    (niboshi-set-key [mouse-4] (lambda () (interactive) (scroll-down-command 1)))
+    (niboshi-set-key [mouse-5] (lambda () (interactive) (scroll-up-command 1)))
+    )
+
+(define-minor-mode niboshi-keys-minor-mode
+  "A minor mode so that my key settings override annoying major modes."
+  :init-value t
+  :lighter " nib-keys")
+
+(niboshi-keys-minor-mode 1)
+
+(add-hook 'after-load-functions 'my-keys-have-priority)
+(defun my-keys-have-priority (_file)
+  "Try to ensure that my keybindings retain priority over other minor modes.
+Called via the `after-load-functions' special hook."
+  (unless (eq (caar minor-mode-map-alist) 'niboshi-keys-minor-mode)
+    (let ((map (assq 'niboshi-keys-minor-mode minor-mode-map-alist)))
+      (assq-delete-all 'niboshi-keys-minor-mode minor-mode-map-alist)
+      (add-to-list 'minor-mode-map-alist map)))
+
+  (unless (eq (caar minor-mode-alist) 'niboshi-keys-minor-mode)
+    (let ((map (assq 'niboshi-keys-minor-mode minor-mode-alist)))
+      (assq-delete-all 'niboshi-keys-minor-mode minor-mode-alist)
+      (add-to-list 'minor-mode-alist map)))
+)
+
 
 ;;-----------------------
 ;; Essential
@@ -280,13 +318,7 @@
 (setq-default tab-width 4)
 (setq-default indent-tabs-mode nil)
 
-;; Show path hotkey
-(global-set-key (niboshi-make-hotkey "p")
-                (lambda () (interactive)
-                  (kill-new buffer-file-name)
-                  (message buffer-file-name)))
-
-;; Evaluation hotkeys
+;; Evaluation wrapper
 (defun niboshi-eval-wrapper(eval-func)
   (progn
     (niboshi-bring-message-buffer-to-front)
@@ -296,10 +328,11 @@
     (with-current-buffer "*Messages*"
       (goto-char (point-max)))))
 
-
-(global-set-key (kbd "C-c e e") (lambda() (interactive) (niboshi-eval-wrapper 'eval-expression)))
-(global-set-key (kbd "C-c e r") (lambda() (interactive) (niboshi-eval-wrapper 'eval-region)))
-(global-set-key (kbd "C-c e b") (lambda() (interactive) (niboshi-eval-wrapper 'eval-buffer)))
+(when t
+  (niboshi-set-key (kbd "C-c e e") (lambda() (interactive) (niboshi-eval-wrapper 'eval-expression)))
+  (niboshi-set-key (kbd "C-c e r") (lambda() (interactive) (niboshi-eval-wrapper 'eval-region)))
+  (niboshi-set-key (kbd "C-c e b") (lambda() (interactive) (niboshi-eval-wrapper 'eval-buffer)))
+  )
 
 ;; Encoding
 (prefer-coding-system 'utf-8)
@@ -307,6 +340,12 @@
 
 ;; Enable CamelCase-aware word editing.
 (global-subword-mode 1)
+
+;; Show path hotkey
+(niboshi-set-key (niboshi-make-hotkey "p")
+                 (lambda () (interactive)
+                   (kill-new buffer-file-name)
+                   (message buffer-file-name)))
 
 ;;-----------------------
 ;; Server
@@ -358,7 +397,7 @@
                                            (select-window niboshi-buffer-menu-other-window-old-buffer)
                                            (setq niboshi-buffer-menu-other-window-old-buffer nil)))))
   (buffer-menu-other-window))
-(global-set-key (kbd "C-x C-b") 'niboshi-buffer-menu-other-window)
+(niboshi-set-key (kbd "C-x C-b") 'niboshi-buffer-menu-other-window)
 
 ;;-----------------------
 ;; dtrt-indent
@@ -412,7 +451,7 @@
     (if (find-file (ido-completing-read "Find recent file: " recentf-list))
         (message "Opening file...")
       (message "Aborting")))
-  (global-set-key (kbd "C-x C-r") 'ido-recentf-open)
+  (niboshi-set-key (kbd "C-x C-r") 'ido-recentf-open)
 
   ;; http://stackoverflow.com/questions/20863386/idomenu-not-working-in-javascript-mode
   (add-hook 'js-mode-hook
@@ -499,7 +538,7 @@
       (progn
         (set-face-attribute 'whitespace-tab nil :background niboshi-default-background :foreground "#333333")
         (set-face-attribute 'whitespace-newline nil :background niboshi-default-background :foreground "#333333")
-        (set-face-attribute 'whitespace-empty nil :background "#200000" :foreground nil)
+        (set-face-attribute 'whitespace-empty nil :background "#ff0000" :foreground nil)
         (set-face-attribute 'whitespace-trailing nil :background "#ff0000" :foreground nil))
     (progn
       (set-face-attribute 'whitespace-tab nil :background niboshi-default-background :foreground "color-237")
@@ -538,7 +577,7 @@
           (if buf
               (replace-buffer-in-windows buf))))))
 
-(global-set-key (niboshi-make-hotkey "-") (lambda() (interactive) (niboshi-put-other-buffer-behind)))
+(niboshi-set-key (niboshi-make-hotkey "-") (lambda() (interactive) (niboshi-put-other-buffer-behind)))
 
 (defun niboshi-bring-message-buffer-to-front()
   (let ((old-win (get-buffer-window)))
@@ -562,7 +601,7 @@
         (select-window (funcall selector)))
       (setq arg (if (plusp arg) (1- arg) (1+ arg))))))
 
-(global-set-key (niboshi-make-hotkey "x") 'niboshi-transpose-windows)
+(niboshi-set-key (niboshi-make-hotkey "x") 'niboshi-transpose-windows)
 
 ;;-----------------------
 ;; ggtags
@@ -574,27 +613,33 @@
   (add-hook
    'ggtags-mode-hook
    (lambda()
-     (global-set-key (kbd "S-<f12>") 'ggtags-find-reference)
-     (global-set-key (kbd "C-<f12>") 'ggtags-find-definition)
-     (global-set-key (kbd "<f12>")   'ggtags-find-definition)
-     (global-set-key (kbd "C-c g r") 'ggtags-find-reference)
-     (global-set-key (kbd "C-c g d") 'ggtags-find-definition)
-     (global-set-key (kbd "C-c g g") 'ggtags-find-tag-dwim)
-     (global-set-key (kbd "C-c g e") 'ggtags-find-tag-regexp)
-     (global-set-key (kbd "C-c g f") 'ggtags-find-file)
-     (global-set-key (kbd "C-c g u") 'ggtags-update-tags)
+     (niboshi-set-key (kbd "S-<f12>") 'ggtags-find-reference)
+     (niboshi-set-key (kbd "C-<f12>") 'ggtags-find-definition)
+     (niboshi-set-key (kbd "<f12>")   'ggtags-find-definition)
+     (niboshi-set-key (kbd "C-c g r") 'ggtags-find-reference)
+     (niboshi-set-key (kbd "C-c g d") 'ggtags-find-definition)
+     (niboshi-set-key (kbd "C-c g g") 'ggtags-find-tag-dwim)
+     (niboshi-set-key (kbd "C-c g e") 'ggtags-find-tag-regexp)
+     (niboshi-set-key (kbd "C-c g f") 'ggtags-find-file)
+     (niboshi-set-key (kbd "C-c g u") 'ggtags-update-tags)
      ;; Put ggtags buffer behind
-     (global-set-key (kbd "C-c g -") (lambda() (interactive)
-                                       (progn
-                                         (let ((buf (get-buffer "*ggtags-global*")))
-                                           (if buf
-                                               (replace-buffer-in-windows buf)))))))))
+     (niboshi-set-key (kbd "C-c g -") (lambda() (interactive)
+                                        (progn
+                                          (let ((buf (get-buffer "*ggtags-global*")))
+                                            (if buf
+                                                (replace-buffer-in-windows buf))))))))
+  :config
+  ;; Disable some key binding
+  (define-key ggtags-navigation-map (kbd "M-p") nil)
+  (define-key ggtags-navigation-map (kbd "M-n") nil)
+  )
+
 ;;-----------------------
 ;; compilation
 ;;-----------------------
-(global-set-key (kbd "C-c c c") 'compile)
-(global-set-key (kbd "C-c c n") 'compilation-next-error)
-(global-set-key (kbd "C-c c p") 'compilation-previous-error)
+(niboshi-set-key (kbd "C-c c c") 'compile)
+(niboshi-set-key (kbd "C-c c n") 'compilation-next-error)
+(niboshi-set-key (kbd "C-c c p") 'compilation-previous-error)
 (add-hook 'compilation-mode-hook
           (lambda ()
             (progn
@@ -631,13 +676,13 @@
 ;; Projectile
 ;;-----------------------
 ;; Trigger C-c p to enable projectile-mode.
-(global-set-key (kbd "C-c p p") (lambda() (interactive)
-                                (message "Enabling projectile...")
-                                (global-unset-key (kbd "C-c p p"))
-                                ;; Enable globally
-                                (projectile-global-mode)
-                                (helm-projectile-toggle 1)
-                                (message "projectile enabled.")))
+(niboshi-set-key (kbd "C-c p p") (lambda() (interactive)
+                                   (message "Enabling projectile...")
+                                   (global-unset-key (kbd "C-c p p"))
+                                   ;; Enable globally
+                                   (projectile-global-mode)
+                                   (helm-projectile-toggle 1)
+                                   (message "projectile enabled.")))
 
 (use-package projectile
   :commands projectile-global-mode
@@ -748,7 +793,7 @@
         (select-window win)
       (message "Minibuffer is not active"))))
 
-(global-set-key (niboshi-make-hotkey "m") 'niboshi-switch-to-minibuffer)
+(niboshi-set-key (niboshi-make-hotkey "m") 'niboshi-switch-to-minibuffer)
 
 ;;-----------------------
 ;; Tips
