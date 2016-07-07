@@ -413,7 +413,16 @@
         (message "Opening file...")
       (message "Aborting")))
   (global-set-key (kbd "C-x C-r") 'ido-recentf-open)
-)
+
+  ;; http://stackoverflow.com/questions/20863386/idomenu-not-working-in-javascript-mode
+  (add-hook 'js-mode-hook
+            (lambda()
+              (setq imenu-create-index-function
+                    (lambda()
+                      (save-excursion
+                        (imenu--generic-function '((nil "function\\s-+\\([^ ]+\\)(" 1)
+                                                   (nil "\\.\\([^\\. ]+\\)\\s-*=\\s-*function\\s-*(" 1))))))))
+  )
 
 (use-package ido-vertical-mode
   :commands ido-vertical-mode
