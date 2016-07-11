@@ -242,6 +242,7 @@ Called via the `after-load-functions' special hook."
     (ignore-errors (package-install 'buffer-move))
     (ignore-errors (package-install 'fill-column-indicator))
     (ignore-errors (package-install 'ido-vertical-mode))
+    (ignore-errors (package-install 'auto-complete))
     (message "niboshi-setup: Finished")
     ))
 
@@ -420,12 +421,6 @@ Called via the `after-load-functions' special hook."
 (niboshi-set-key (kbd "C-x C-b") 'niboshi-buffer-menu-other-window)
 
 ;;-----------------------
-;; dtrt-indent
-;;-----------------------
-(use-package dtrt-indent
-  :commands dtrt-indent-mode)
-
-;;-----------------------
 ;; Hooks
 ;;-----------------------
 (add-hook 'c-mode-common-hook
@@ -433,21 +428,13 @@ Called via the `after-load-functions' special hook."
             (setq tab-width 4)
             (setq c-basic-offset tab-width)
             (c-set-offset 'arglist-intro '++)
-            (setq indent-tabs-mode t)
-            (which-function-mode t) ; show function name
-            (if (fboundp 'whitespace-mode) (whitespace-mode t))
-            (dtrt-indent-mode t)
-            (ggtags-mode)))
+            (setq indent-tabs-mode t)))
 
 (add-hook 'python-mode-hook
           (lambda ()
             (setq indent-tabs-mode t)
             (setq tab-width 4)
-            (setq python-indent 4)
-            (which-function-mode t) ; show function name
-            (if (fboundp 'whitespace-mode) (whitespace-mode t))
-            (dtrt-indent-mode t)
-            (ggtags-mode)))
+            (setq python-indent 4)))
 
 ;;-----------------------
 ;; ido-mode (Interactive buffer switch, etc.)
@@ -492,6 +479,43 @@ Called via the `after-load-functions' special hook."
               (define-key ido-completion-map (kbd "C-p") 'ido-prev-match)
               (define-key ido-completion-map (kbd "<down>") 'ido-next-match)
               (define-key ido-completion-map (kbd "<up>") 'ido-prev-match))))
+
+;;-----------------------
+;; auto-complete
+;;-----------------------
+(use-package auto-complete
+  :commands auto-complete-mode
+  :init
+  (setq ac-auto-start nil)
+  (setq ac-use-menu-map t) ; Use ac-menu-map; only takes effect while the menu is shown.
+  (add-hook 'prog-mode-hook
+            (lambda()
+              (auto-complete-mode t)))
+  :config
+  (define-key ac-mode-map (niboshi-make-hotkey "TAB") 'auto-complete)
+  ;; C-n/C-p to navigate candidates in the menu
+  (define-key ac-menu-map (kbd "C-n") 'ac-next)
+  (define-key ac-menu-map (kbd "C-p") 'ac-previous))
+
+;;-----------------------
+;; dtrt-indent
+;;-----------------------
+(use-package dtrt-indent
+  :commands dtrt-indent-mode
+  :init
+  (add-hook 'prog-mode-hook
+            (lambda()
+              (dtrt-indent-mode t))))
+
+;;-----------------------
+;; which-func
+;;-----------------------
+(use-package which-func
+  :commands which-function-mode
+  :init
+  (add-hook 'prog-mode-hook
+            (lambda()
+              (which-function-mode t))))
 
 ;;-----------------------
 ;; Open explorer
@@ -549,9 +573,11 @@ Called via the `after-load-functions' special hook."
 ;;-----------------------
 (use-package whitespace
   :commands whitespace-mode
-  :bind (("C-c = w" . whitespace-mode))
   :init
-  (add-hook 'find-file-hook (lambda() (whitespace-mode t)))
+  (niboshi-set-key (kbd "C-c = w") 'whitespace-mode)
+  (add-hook 'prog-mode-hook
+            (lambda()
+              (whitespace-mode t)))
   :config
   (setq whitespace-style '(empty face tabs newline tab-mark newline-mark trailing))
   (if (display-graphic-p)
@@ -630,6 +656,9 @@ Called via the `after-load-functions' special hook."
   :commands ggtags-mode
   :init
   (setq ggtags-oversize-limit t)
+  (add-hook 'prog-mode-hook
+            (lambda()
+              (ggtags-mode t)))
   (add-hook
    'ggtags-mode-hook
    (lambda()
