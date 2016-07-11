@@ -1,4 +1,4 @@
- ;;-----------------------
+;;-----------------------
 ;; Profiling setup
 ;;-----------------------
 (setq niboshi-init-start-time (current-time))
@@ -101,9 +101,26 @@
     (niboshi-set-key (kbd "M-P") (lambda () (interactive) (scroll-down-command 1)))
     (niboshi-set-key (kbd "M-N") (lambda () (interactive) (scroll-up-command 1)))
 
-    ;; Next/previous match
-    (niboshi-set-key (kbd "C-S-p") 'previous-error)
-    (niboshi-set-key (kbd "C-S-n") 'next-error)
+    ;; niboshi-error-navigation-minor-mode:
+    ;;   C-c ; e         to start navigating erros
+    ;;   C-M-p or C-M-n  to navigate errors during the navigation mode
+    (when t
+      ;; Custom key map minor mode
+      (defvar niboshi-error-navigation-minor-mode-map
+        (make-sparse-keymap))
+
+      (define-minor-mode niboshi-error-navigation-minor-mode
+        "A minor mode for navigating errors."
+        :init-value nil
+        :global t
+        :lighter " ")
+
+      (define-key niboshi-error-navigation-minor-mode-map (kbd "C-M-p") 'previous-error)
+      (define-key niboshi-error-navigation-minor-mode-map (kbd "C-M-n") 'next-error)
+
+      ;; Next/previous match
+      (niboshi-set-key (niboshi-make-hotkey "e") 'niboshi-error-navigation-minor-mode)
+      )
 
     ;; Use regex search by default
     (niboshi-set-key (kbd "C-s") 'isearch-forward-regexp)
