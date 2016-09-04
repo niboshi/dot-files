@@ -559,6 +559,17 @@ Called via the `after-load-functions' special hook."
           (let ((null-device "/dev/null")) ad-do-it))))
 
 ;;-----------------------
+;; grep
+;;-----------------------
+(use-package grep
+  :config
+  ;; Modify default extension list
+  ;; Replace C extensions with those of C++.
+  (add-to-list 'grep-files-aliases
+               `("ch" . ,(cdr (assoc "cchh" grep-files-aliases)))))
+
+
+;;-----------------------
 ;; Disable startup "For information..." message
 ;; (Note: inhibit-startup-* method also works but it requires hardcoded user name)
 ;;-----------------------
