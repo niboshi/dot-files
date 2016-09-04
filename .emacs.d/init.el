@@ -836,6 +836,12 @@ Called via the `after-load-functions' special hook."
                      (t nil)))))))
 
 ;;-----------------------
+;; Makefile
+;;-----------------------
+(use-package make-mode
+  :mode (("\\Makefile.*\\'" . makefile-mode)))
+
+;;-----------------------
 ;; switch-to-minibuffer
 ;;-----------------------
 (defun niboshi-switch-to-minibuffer ()
