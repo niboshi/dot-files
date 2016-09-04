@@ -208,6 +208,10 @@ Called via the `after-load-functions' special hook."
 (setq auto-save-default nil)
 (setq create-lockfiles nil)
 
+;; Prefer modified .el file over byte-compiled package
+(when (not (version< emacs-version "24.4"))
+  (setq load-prefer-newer t))
+
 ;;-----------------------
 ;; MELPA
 ;;-----------------------
