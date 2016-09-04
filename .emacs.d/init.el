@@ -58,6 +58,9 @@
 (defun niboshi-set-key (k fn)
   (define-key niboshi-keys-minor-mode-map k fn))
 
+(defun niboshi-unset-key (k)
+  (define-key niboshi-keys-minor-mode-map k nil))
+
 ;;-----------------------
 ;; Disable original features
 ;;-----------------------
@@ -734,15 +737,6 @@ Called via the `after-load-functions' special hook."
 ;;-----------------------
 ;; Projectile
 ;;-----------------------
-;; Trigger C-c p to enable projectile-mode.
-(niboshi-set-key (kbd "C-c p p") (lambda() (interactive)
-                                   (message "Enabling projectile...")
-                                   (global-unset-key (kbd "C-c p p"))
-                                   ;; Enable globally
-                                   (projectile-global-mode)
-                                   (helm-projectile-toggle 1)
-                                   (message "projectile enabled.")))
-
 (use-package projectile
   :commands projectile-global-mode
   :init
@@ -753,6 +747,12 @@ Called via the `after-load-functions' special hook."
 
 (use-package helm-projectile
   :commands helm-projectile-toggle
+  :bind (("C-c p a" . helm-projectile-find-other-file)
+         ("C-c p p" . helm-projectile-switch-project)
+         ("C-c p f" . helm-projectile-find-file))
+  :config
+  (projectile-global-mode)
+  (helm-projectile-toggle 1)
   )
 
 ;;-----------------------
