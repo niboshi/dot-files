@@ -713,6 +713,12 @@ Called via the `after-load-functions' special hook."
 ;;-----------------------
 (use-package magit
   :defer t
+  :init
+  (niboshi-set-key (kbd "C-c m m") 'magit-status)
+  (niboshi-set-key (kbd "C-c m s") 'magit-status)
+  (niboshi-set-key (kbd "C-c m l") 'magit-log-buffer-file)
+  (niboshi-set-key (kbd "C-c m L") 'magit-log-current)
+  (niboshi-set-key (kbd "C-c m b") 'magit-blame)
   :config
   (let ((background-highlight "gray10"))
     (set-face-attribute 'magit-diff-context-highlight nil :foreground nil       :background background-highlight)
