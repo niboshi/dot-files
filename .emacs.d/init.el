@@ -413,6 +413,16 @@ Called via the `after-load-functions' special hook."
     (setq-default fci-rule-color "color-234")))
 
 ;;-----------------------
+;; Python
+;;-----------------------
+(use-package python
+  :config
+  ;; Define run-python3 function
+  (defun run-python3() (interactive)
+    (let ((python-shell-interpreter "python3"))
+      (call-interactively 'run-python))))
+
+;;-----------------------
 ;; buffer-menu
 ;;-----------------------
 (defun niboshi-buffer-menu-other-window()
