@@ -416,6 +416,7 @@ Called via the `after-load-functions' special hook."
 ;; Python
 ;;-----------------------
 (use-package python
+  :mode (("\\.wsgi\\'" . python-mode))
   :config
   ;; Define run-python3 function
   (defun run-python3() (interactive)
