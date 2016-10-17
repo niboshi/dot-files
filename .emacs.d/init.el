@@ -370,10 +370,10 @@ Called via the `after-load-functions' special hook."
 (global-subword-mode 1)
 
 ;; Show path hotkey
-(niboshi-set-key (niboshi-make-hotkey "p")
-                 (lambda () (interactive)
-                   (kill-new buffer-file-name)
-                   (message buffer-file-name)))
+(defun niboshi-print-current-buffer-file-name() (interactive)
+  (kill-new buffer-file-name)
+  (message buffer-file-name))
+(niboshi-set-key (niboshi-make-hotkey "p") 'niboshi-print-current-buffer-file-name)
 
 ;;-----------------------
 ;; Server
@@ -646,13 +646,14 @@ Called via the `after-load-functions' special hook."
 ;; Put other buffer behind
 ;;-----------------------
 (defun niboshi-put-other-buffer-behind()
+  (interactive)
   (let ((win (car (cdr (window-list)))))
     (if win
         (let ((buf (window-buffer win)))
           (if buf
               (replace-buffer-in-windows buf))))))
 
-(niboshi-set-key (niboshi-make-hotkey "-") (lambda() (interactive) (niboshi-put-other-buffer-behind)))
+(niboshi-set-key (niboshi-make-hotkey "-") 'niboshi-put-other-buffer-behind)
 
 (defun niboshi-bring-message-buffer-to-front()
   (let ((old-win (get-buffer-window)))
