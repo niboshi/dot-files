@@ -257,6 +257,7 @@ Called via the `after-load-functions' special hook."
 ;; If it is not yet installed, install it now.
 (unless (require 'use-package nil 'noerror)
   (message "Installing use-package...")
+  (package-refresh-contents)
   (package-install 'use-package)
   (require 'use-package))
 
@@ -454,6 +455,7 @@ Called via the `after-load-functions' special hook."
             (setq tab-width 4)
             (setq python-indent 4)))
 
+
 ;;-----------------------
 ;; ido-mode (Interactive buffer switch, etc.)
 ;;-----------------------
@@ -508,7 +510,7 @@ Called via the `after-load-functions' special hook."
   (setq ac-use-menu-map t) ; Use ac-menu-map; only takes effect while the menu is shown.
   (add-hook 'prog-mode-hook
             (lambda()
-              (auto-complete-mode t)))
+              (ignore-errors (auto-complete-mode t))))
   :config
   (define-key ac-mode-map (niboshi-make-hotkey "TAB") 'auto-complete)
   ;; C-n/C-p to navigate candidates in the menu
@@ -688,7 +690,7 @@ Called via the `after-load-functions' special hook."
   (setq ggtags-oversize-limit t)
   (add-hook 'prog-mode-hook
             (lambda()
-              (ggtags-mode t)))
+              (ignore-errors (ggtags-mode t))))
   (add-hook
    'ggtags-mode-hook
    (lambda()
