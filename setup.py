@@ -14,11 +14,14 @@ FILE_LIST = [
 	(".bash_profile", None),
 	(".profile", None),
 	(".vimrc", None),
+	(".gitconfig", None),
 	("bin", ".bindirs/dot-files"),
 ]
 
 def do_link(src_path, dst_path, force=False):
-	if os.path.exists(dst_path):
+	if os.path.islink(dst_path):
+		os.remove(dst_path)
+	elif os.path.exists(dst_path):
 		print("Destination file exists: {}".format(dst_path))
 		if force:
 			cancel = False
@@ -36,7 +39,7 @@ def do_link(src_path, dst_path, force=False):
 		os.remove(dst_path)
 
 	os.symlink(src_path, dst_path)
-	return True			
+	return True
 
 def main(arglist):
 	parser = argparse.ArgumentParser()
