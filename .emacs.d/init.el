@@ -333,20 +333,6 @@ Called via the `after-load-functions' special hook."
                  (load-file (concat base-dir "/" file)))))))))
 
 ;;-----------------------
-;; Per-host coloring
-;;-----------------------
-(defvar niboshi-host-color-alist
-  '(
-    ("amane" . "green")
-    ("natsumi" . "deep sky blue")
-  ))
-(defvar niboshi-host-color
-  (let ((color (cdr (assoc (downcase system-name) niboshi-host-color-alist))))
-    (if color color "orange")))
-
-(add-hook 'after-init-hook (lambda() (set-face-attribute 'mode-line nil :background niboshi-host-color)))
-
-;;-----------------------
 ;; Misc
 ;;-----------------------
 (setq-default truncate-lines t)
@@ -419,17 +405,6 @@ Called via the `after-load-functions' special hook."
     (setq-default fci-rule-color "color-234")))
 
 ;;-----------------------
-;; Python
-;;-----------------------
-(use-package python
-  :mode (("\\.wsgi\\'" . python-mode))
-  :config
-  ;; Define run-python3 function
-  (defun run-python3() (interactive)
-    (let ((python-shell-interpreter "python3"))
-      (call-interactively 'run-python))))
-
-;;-----------------------
 ;; buffer-menu
 ;;-----------------------
 (defun niboshi-buffer-menu-other-window()
@@ -444,22 +419,6 @@ Called via the `after-load-functions' special hook."
                                            (setq niboshi-buffer-menu-other-window-old-buffer nil)))))
   (buffer-menu-other-window))
 (niboshi-set-key (kbd "C-x C-b") 'niboshi-buffer-menu-other-window)
-
-;;-----------------------
-;; Hooks
-;;-----------------------
-(add-hook 'c-mode-common-hook
-          (lambda()
-            (setq tab-width 4)
-            (setq c-basic-offset tab-width)
-            (c-set-offset 'arglist-intro '++)
-            (setq indent-tabs-mode t)))
-
-(add-hook 'python-mode-hook
-          (lambda ()
-            (setq indent-tabs-mode t)
-            (setq tab-width 4)
-            (setq python-indent-offset 4)))
 
 
 ;;-----------------------
@@ -554,29 +513,6 @@ Called via the `after-load-functions' special hook."
             (lambda()
               (which-function-mode t))))
 
-;;-----------------------
-;; Open explorer
-;;-----------------------
-(if (eq system-type 'windows-nt)
-    (if (not (fboundp 'explorer))
-        (defun explorer ()
-          (interactive)
-          (shell-command (concat "C:/Windows/explorer /select, " (replace-regexp-in-string "/" "\\" buffer-file-name t t))))
-      (message "Function explorer is already defined.")))
-
-
-;;-----------------------
-;; Cygwin/MSYS find-grep workaround
-;;-----------------------
-;; Cygwin/MSYS's find can't handle "NUL" file, which causes some problem in find-grep command family.
-;; Here's workaround.
-(if (eq system-type 'windows-nt)
-    (if (boundp 'niboshi-grep-windows-null-device-workaround)
-        (defadvice grep-compute-defaults (around grep-compute-defaults-advice-null-device activate)
-          ;;; This is neccessary for 'grep' command
-          (setq null-device "/dev/null")
-          ;;; This is neccessary for 'lgrep', 'rgrep', 'find-grep', etc.
-          (let ((null-device "/dev/null")) ad-do-it))))
 
 ;;-----------------------
 ;; grep
@@ -699,40 +635,6 @@ Called via the `after-load-functions' special hook."
 (niboshi-set-key (niboshi-make-hotkey "x") 'niboshi-transpose-windows)
 
 ;;-----------------------
-;; ggtags
-;;-----------------------
-(use-package ggtags
-  :commands ggtags-mode
-  :init
-  (setq ggtags-oversize-limit t)
-  (add-hook 'cc-mode-common-hook
-            (lambda()
-              (ignore-errors (ggtags-mode t))))
-  (add-hook
-   'ggtags-mode-hook
-   (lambda()
-     (niboshi-set-key (kbd "S-<f12>") 'ggtags-find-reference)
-     (niboshi-set-key (kbd "C-<f12>") 'ggtags-find-definition)
-     (niboshi-set-key (kbd "<f12>")   'ggtags-find-definition)
-     (niboshi-set-key (kbd "C-c g r") 'ggtags-find-reference)
-     (niboshi-set-key (kbd "C-c g d") 'ggtags-find-definition)
-     (niboshi-set-key (kbd "C-c g g") 'ggtags-find-tag-dwim)
-     (niboshi-set-key (kbd "C-c g e") 'ggtags-find-tag-regexp)
-     (niboshi-set-key (kbd "C-c g f") 'ggtags-find-file)
-     (niboshi-set-key (kbd "C-c g u") 'ggtags-update-tags)
-     ;; Put ggtags buffer behind
-     (niboshi-set-key (kbd "C-c g -") (lambda() (interactive)
-                                        (progn
-                                          (let ((buf (get-buffer "*ggtags-global*")))
-                                            (if buf
-                                                (replace-buffer-in-windows buf))))))))
-  :config
-  ;; Disable some key binding
-  (define-key ggtags-navigation-map (kbd "M-p") nil)
-  (define-key ggtags-navigation-map (kbd "M-n") nil)
-  )
-
-;;-----------------------
 ;; compilation
 ;;-----------------------
 (niboshi-set-key (kbd "C-c c c") 'compile)
@@ -808,15 +710,6 @@ Called via the `after-load-functions' special hook."
   (eshell-command
    (format "cd %s ; etags %s" dir-name filename-pattern)))
 
-;;-----------------------
-;; Jedi
-;;-----------------------
-(use-package jedi
-  :commands jedi:setup
-  :init
-  (defvar jedi:complete-on-dot t)
-  (defvar jedi:use-shortcuts t)
-  (add-hook 'python-mode-hook 'jedi:setup))
 
 ;;-----------------------
 ;; Hooks
@@ -830,7 +723,6 @@ Called via the `after-load-functions' special hook."
   '(
     (emacs-lisp-mode       . "elisp")
     (lisp-interaction-mode . "i-elisp")
-    (python-mode           . "PY")
   ))
 (defun niboshi-choose-mode-line-text()
   (let ((n (cdr (assoc major-mode niboshi-mode-name-alist))))
@@ -863,34 +755,6 @@ Called via the `after-load-functions' special hook."
 ;; Disable backends except SVN
 ;; because vc often causes slowdown.
 (setq vc-handled-backends '(SVN))
-
-;;-----------------------
-;; Markdown
-;;-----------------------
-(use-package markdown-mode
-  :mode (("\\.md\\'" . markdown-mode))
-  :config
-  (add-hook 'markdown-mode-hook
-            (lambda()
-            ;; Override markdown preview filename
-            (defun markdown-export-file-name (&optional extension)
-              (when (buffer-file-name)
-                (unless extension
-                  (setq extension ".html"))
-                (concat
-                 (file-name-as-directory temporary-file-directory)
-                 (file-name-as-directory "emacs-markdown")
-                 (file-name-nondirectory (buffer-file-name))
-                 extension)))
-
-            ;; Select available markdown renderer
-            (let ((command-succeeded (lambda(cmd) (eq 0 (call-process shell-file-name nil nil nil shell-command-switch cmd)))))
-              (setq markdown-command
-                    (cond
-                     ((funcall command-succeeded "markdown --help") "markdown")
-                     ((funcall command-succeeded "python -c \"import markdown2\"") "python -m markdown2 --extras fenced-code-blocks")
-                     ((funcall command-succeeded "python -c \"import markdown\"") "python -m markdown -x markdown.extensions.fenced_code")
-                     (t nil)))))))
 
 ;;-----------------------
 ;; Makefile
