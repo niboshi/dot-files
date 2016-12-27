@@ -249,7 +249,13 @@ Called via the `after-load-functions' special hook."
     (ignore-errors (package-install 'buffer-move))
     (ignore-errors (package-install 'fill-column-indicator))
     (ignore-errors (package-install 'ido-vertical-mode))
-    (ignore-errors (package-install 'auto-complete))
+    (ignore-errors (package-install 'company))
+    (ignore-errors (package-install 'company-go))
+    (ignore-errors (package-install 'company-jedi))
+    (ignore-errors (package-install 'company-racer))
+    (ignore-errors (package-install 'flycheck))
+    (ignore-errors (package-install 'flycheck-rust))
+
     (message "niboshi-setup: Finished")
     ))
 
@@ -404,8 +410,7 @@ Called via the `after-load-functions' special hook."
 (use-package fill-column-indicator
   :commands fci-mode
   :init
-  (add-hook 'c-mode-common-hook 'fci-mode)
-  (add-hook 'python-mode-hook 'fci-mode)
+  (add-hook 'prog-mode-hook 'fci-mode)
   :config
   (setq-default fci-always-use-textual-rule t) ; Default behaviour (draw line by image) causes line height problem.
   (setq-default fci-rule-column 80)
@@ -454,7 +459,7 @@ Called via the `after-load-functions' special hook."
           (lambda ()
             (setq indent-tabs-mode t)
             (setq tab-width 4)
-            (setq python-indent 4)))
+            (setq python-indent-offset 4)))
 
 
 ;;-----------------------
@@ -502,21 +507,32 @@ Called via the `after-load-functions' special hook."
               (define-key ido-completion-map (kbd "<up>") 'ido-prev-match))))
 
 ;;-----------------------
-;; auto-complete
+;; Company
 ;;-----------------------
-(use-package auto-complete
-  :commands auto-complete-mode
+(use-package company
+  :commands company-mode
   :init
-  (setq ac-auto-start nil)
-  (setq ac-use-menu-map t) ; Use ac-menu-map; only takes effect while the menu is shown.
+  (add-hook 'prog-mode-hook 'company-mode)
+  (add-hook 'go-mode-hook
+            (lambda()
+              (set (make-local-variable 'company-backends) '(company-go))))
+  :config
+  (add-to-list 'company-backends 'company-racer)
+  (add-to-list 'company-backends 'company-jedi)
+  (niboshi-set-key (niboshi-make-hotkey "TAB") 'company-complete)
+  )
+
+;;-----------------------
+;; flycheck
+;;-----------------------
+(use-package flycheck
+  :commands flycheck-mode
+  :init
   (add-hook 'prog-mode-hook
             (lambda()
-              (ignore-errors (auto-complete-mode t))))
-  :config
-  (define-key ac-mode-map (niboshi-make-hotkey "TAB") 'auto-complete)
-  ;; C-n/C-p to navigate candidates in the menu
-  (define-key ac-menu-map (kbd "C-n") 'ac-next)
-  (define-key ac-menu-map (kbd "C-p") 'ac-previous))
+              (flycheck-mode t)))
+  (setq-default flycheck-disabled-checkers '(emacs-lisp-checkdoc))
+)
 
 ;;-----------------------
 ;; dtrt-indent
@@ -689,7 +705,7 @@ Called via the `after-load-functions' special hook."
   :commands ggtags-mode
   :init
   (setq ggtags-oversize-limit t)
-  (add-hook 'prog-mode-hook
+  (add-hook 'cc-mode-common-hook
             (lambda()
               (ignore-errors (ggtags-mode t))))
   (add-hook
@@ -726,7 +742,7 @@ Called via the `after-load-functions' special hook."
           (lambda ()
             (progn
               (setq compilation-scroll-output 'first-error)
-              (setq complation-auto-jump-to-first-error t)
+              (setq compilation-auto-jump-to-first-error t)
               )))
 
 ;;-----------------------
@@ -792,6 +808,15 @@ Called via the `after-load-functions' special hook."
   (eshell-command
    (format "cd %s ; etags %s" dir-name filename-pattern)))
 
+;;-----------------------
+;; Jedi
+;;-----------------------
+(use-package jedi
+  :commands jedi:setup
+  :init
+  (defvar jedi:complete-on-dot t)
+  (defvar jedi:use-shortcuts t)
+  (add-hook 'python-mode-hook 'jedi:setup))
 
 ;;-----------------------
 ;; Hooks
