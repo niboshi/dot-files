@@ -1,7 +1,7 @@
 ;;-----------------------
 ;; Profiling setup
 ;;-----------------------
-(setq niboshi-init-start-time (current-time))
+(defvar niboshi-init-start-time (current-time))
 ; How much time did it take to come here?
 (message "(%.03f seconds before init.el)" (float-time (time-subtract niboshi-init-start-time before-init-time)))
 
@@ -20,8 +20,8 @@
 ;;-----------------------
 ;; Custom variable
 ;;-----------------------
-(setq niboshi-default-background "black"
-      niboshi-default-foreground "#cccccc")
+(defvar niboshi-default-background "black")
+(defvar niboshi-default-foreground "#cccccc")
 
 ;;-----------------------
 ;; niboshi common functions
@@ -32,7 +32,7 @@
   (niboshi-install-packages))
 
 ;; niboshi-make-hotkey
-(setq niboshi-hotkey-prefix (kbd "C-c ;"))
+(defvar niboshi-hotkey-prefix (kbd "C-c ;"))
 (defun niboshi-make-hotkey  (k) (concat niboshi-hotkey-prefix (kbd k)))
 (defun niboshi-make-hotkey- (k) (key-description (concat niboshi-hotkey-prefix (kbd k))))
 
@@ -70,7 +70,7 @@
 (global-unset-key (kbd "C-c C-z"))
 
 ;; Disable ALT-key hook, to re-enable Windows system menu
-(setq w32-pass-alt-to-system 1)
+(defvar w32-pass-alt-to-system 1)
 
 ;;-----------------------
 ;; Essential keybinding
@@ -97,8 +97,8 @@
     (niboshi-set-key (kbd "C-c .") 'recenter)
 
     ;; Move cursor position without changing it's apparetn position in screen
-    (niboshi-set-key (kbd "M-p") (lambda () (interactive) (previous-line) (scroll-down-command 1)))
-    (niboshi-set-key (kbd "M-n") (lambda () (interactive) (next-line) (scroll-up-command 1)))
+    (niboshi-set-key (kbd "M-p") (lambda () (interactive) (forward-line -1) (scroll-down-command 1)))
+    (niboshi-set-key (kbd "M-n") (lambda () (interactive) (forward-line +1) (scroll-up-command 1)))
 
     ;; Scroll without moving cursor
     (niboshi-set-key (kbd "M-P") (lambda () (interactive) (scroll-down-command 1)))
@@ -343,7 +343,7 @@ Called via the `after-load-functions' special hook."
 ;;-----------------------
 ;; Misc
 ;;-----------------------
-(setq default-truncate-lines t)
+(setq-default truncate-lines t)
 (setq-default tab-width 4)
 (setq-default indent-tabs-mode nil)
 
@@ -365,7 +365,7 @@ Called via the `after-load-functions' special hook."
 
 ;; Encoding
 (prefer-coding-system 'utf-8)
-(setq default-buffer-file-coding-system 'utf-8-unix)
+(setq-default buffer-file-coding-system 'utf-8-unix)
 
 ;; Enable CamelCase-aware word editing.
 (global-subword-mode 1)
@@ -429,6 +429,7 @@ Called via the `after-load-functions' special hook."
 ;;-----------------------
 (defun niboshi-buffer-menu-other-window()
   (interactive)
+  (defvar niboshi-buffer-menu-other-window-old-buffer)
   (setq niboshi-buffer-menu-other-window-old-buffer (get-buffer-window))
   (add-hook 'Buffer-menu-mode-hook
             (lambda()
