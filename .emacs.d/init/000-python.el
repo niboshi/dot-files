@@ -2,6 +2,7 @@
 ;; Python
 ;;-----------------------
 (use-package python
+  :ensure t
   :mode (("\\.wsgi\\'" . python-mode))
   :config
   ;; Define run-python3 function
@@ -23,6 +24,7 @@
 ;; Jedi
 ;;-----------------------
 (use-package jedi
+  :ensure t
   :commands jedi:setup
   :init
   (defvar jedi:complete-on-dot t)

@@ -2,6 +2,7 @@
 ;; magit
 ;;-----------------------
 (use-package magit
+  :ensure t
   :defer t
   :init
   (niboshi-set-key (kbd "C-c m m") 'magit-status)

@@ -12,6 +12,7 @@
 ;; ggtags
 ;;-----------------------
 (use-package ggtags
+  :ensure t
   :commands ggtags-mode
   :init
   (setq ggtags-oversize-limit t)

@@ -235,27 +235,7 @@ Called via the `after-load-functions' special hook."
   (interactive)
   (progn
     (message "niboshi-setup: Starting...")
-    (ignore-errors (package-install 'use-package))
-    (ignore-errors (package-install 'ggtags))
-    (ignore-errors (package-install 'neotree))
-    (ignore-errors (package-install 'helm))
-    (ignore-errors (package-install 'projectile))
-    (ignore-errors (package-install 'helm-projectile))
-    (ignore-errors (package-install 'helm-swoop))
-    (ignore-errors (package-install 'dtrt-indent)) ; auto-detect indentation
-    (ignore-errors (package-install 'magit))
-    (ignore-errors (package-install 'markdown-mode))
-    (ignore-errors (package-install 'idomenu))
-    (ignore-errors (package-install 'buffer-move))
-    (ignore-errors (package-install 'fill-column-indicator))
-    (ignore-errors (package-install 'ido-vertical-mode))
-    (ignore-errors (package-install 'company))
-    (ignore-errors (package-install 'company-go))
-    (ignore-errors (package-install 'company-jedi))
-    (ignore-errors (package-install 'company-racer))
-    (ignore-errors (package-install 'flycheck))
-    (ignore-errors (package-install 'flycheck-rust))
-
+    (jedi:install-server)
     (message "niboshi-setup: Finished")
     ))
 
@@ -372,6 +352,7 @@ Called via the `after-load-functions' special hook."
 ;; Server
 ;;-----------------------
 (use-package server
+  :ensure t
   :config
   (unless (server-running-p)
     (server-start)))
@@ -380,6 +361,7 @@ Called via the `after-load-functions' special hook."
 ;; Line number
 ;;-----------------------
 (use-package linum
+  :ensure t
   :commands linum-mode
   :init
   (add-hook 'find-file-hook (lambda() (linum-mode 1)))
@@ -394,6 +376,7 @@ Called via the `after-load-functions' special hook."
 ;; fill-column-indicator
 ;;-----------------------
 (use-package fill-column-indicator
+  :ensure t
   :commands fci-mode
   :init
   (add-hook 'prog-mode-hook 'fci-mode)
@@ -425,6 +408,7 @@ Called via the `after-load-functions' special hook."
 ;; ido-mode (Interactive buffer switch, etc.)
 ;;-----------------------
 (use-package ido
+  :ensure t
   :commands ido-mode
   :init
   (setq ido-enable-prefix nil)
@@ -456,6 +440,7 @@ Called via the `after-load-functions' special hook."
   )
 
 (use-package ido-vertical-mode
+  :ensure t
   :commands ido-vertical-mode
   :config
   (add-hook 'ido-setup-hook
@@ -469,6 +454,7 @@ Called via the `after-load-functions' special hook."
 ;; Company
 ;;-----------------------
 (use-package company
+  :ensure t
   :commands company-mode
   :init
   (add-hook 'prog-mode-hook 'company-mode)
@@ -481,10 +467,15 @@ Called via the `after-load-functions' special hook."
   (niboshi-set-key (niboshi-make-hotkey "TAB") 'company-complete)
   )
 
+(use-package company-go :ensure t)
+(use-package company-jedi :ensure t)
+(use-package company-racer :ensure t)
+
 ;;-----------------------
 ;; flycheck
 ;;-----------------------
 (use-package flycheck
+  :ensure t
   :commands flycheck-mode
   :init
   (add-hook 'prog-mode-hook
@@ -497,6 +488,7 @@ Called via the `after-load-functions' special hook."
 ;; dtrt-indent
 ;;-----------------------
 (use-package dtrt-indent
+  :ensure t
   :commands dtrt-indent-mode
   :init
   (add-hook 'prog-mode-hook
@@ -507,6 +499,7 @@ Called via the `after-load-functions' special hook."
 ;; which-func
 ;;-----------------------
 (use-package which-func
+  :ensure t
   :commands which-function-mode
   :init
   (add-hook 'prog-mode-hook
@@ -518,6 +511,7 @@ Called via the `after-load-functions' special hook."
 ;; grep
 ;;-----------------------
 (use-package grep
+  :ensure t
   :config
   ;; Modify default extension list
   ;; Replace C extensions with those of C++.
@@ -535,6 +529,7 @@ Called via the `after-load-functions' special hook."
 ;; Recent files
 ;;-----------------------
 (use-package recentf
+  :ensure t
   :commands recentf-open-files
   :config
   (setq recentf-save-file (concat "~/.emacs.d/recentf-" system-name))
@@ -556,6 +551,7 @@ Called via the `after-load-functions' special hook."
 ;; Whitespace
 ;;-----------------------
 (use-package whitespace
+  :ensure t
   :commands whitespace-mode
   :init
   (niboshi-set-key (kbd "C-c = w") 'whitespace-mode)
@@ -651,6 +647,7 @@ Called via the `after-load-functions' special hook."
 ;; diff
 ;;-----------------------
 (use-package diff-mode
+  :ensure t
   :config
   (set-face-attribute 'diff-added   nil :foreground "green" :background "black")
   (set-face-attribute 'diff-removed nil :foreground "red"   :background "black"))
@@ -659,6 +656,7 @@ Called via the `after-load-functions' special hook."
 ;; Projectile
 ;;-----------------------
 (use-package projectile
+  :ensure t
   :commands projectile-global-mode
   :init
   (setq projectile-indexing-method 'alien)
@@ -667,6 +665,7 @@ Called via the `after-load-functions' special hook."
 )
 
 (use-package helm-projectile
+  :ensure t
   :commands helm-projectile-toggle
   :bind (("C-c p a" . helm-projectile-find-other-file)
          ("C-c p p" . helm-projectile-switch-project)
@@ -713,6 +712,7 @@ Called via the `after-load-functions' special hook."
 ;; helm-swoop
 ;;-----------------------
 (use-package helm-swoop
+  :ensure t
   :bind (("M-i" . helm-swoop)
          ("M-I" . helm-swoop-back-to-last-point)
          ("C-c M-i" . helm-multi-swoop)
@@ -723,6 +723,7 @@ Called via the `after-load-functions' special hook."
 ;; idomenu
 ;;-----------------------
 (use-package idomenu
+  :ensure t
   :bind (("C-c ; i" . idomenu))
 )
 
@@ -737,6 +738,7 @@ Called via the `after-load-functions' special hook."
 ;; Makefile
 ;;-----------------------
 (use-package make-mode
+  :ensure t
   :mode (("\\Makefile.*\\'" . makefile-mode)))
 
 ;;-----------------------

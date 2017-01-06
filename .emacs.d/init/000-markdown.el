@@ -2,6 +2,7 @@
 ;; Markdown
 ;;-----------------------
 (use-package markdown-mode
+  :ensure t
   :mode (("\\.md\\'" . markdown-mode))
   :config
   (add-hook 'markdown-mode-hook

@@ -11,4 +11,3 @@
     (if color color "orange")))
 
 (add-hook 'after-init-hook (lambda() (set-face-attribute 'mode-line nil :background niboshi-host-color)))
-
