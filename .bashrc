@@ -14,6 +14,12 @@ shopt -s globstar        # Allows recursive glob with **
 tty -s && stty -ixon
 
 #---------------------------
+# Key binding
+#---------------------------
+# Bind Alt-h to delete a preceding word
+bind '"\eh": backward-kill-word'
+
+#---------------------------
 # history
 #---------------------------
 HISTSIZE=20000
