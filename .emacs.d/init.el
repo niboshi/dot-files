@@ -379,7 +379,9 @@ Called via the `after-load-functions' special hook."
   :ensure t
   :commands fci-mode
   :init
-  (add-hook 'prog-mode-hook 'fci-mode)
+  (add-hook 'prog-mode-hook
+            (lambda()
+              (run-at-time "0 sec" nil 'fci-mode)))
   :config
   (setq-default fci-always-use-textual-rule t) ; Default behaviour (draw line by image) causes line height problem.
   (setq-default fci-rule-column 80)
