@@ -3,7 +3,8 @@
 ;;-----------------------
 (use-package python
   :ensure t
-  :mode (("\\.wsgi\\'" . python-mode))
+  :mode (("\\.wsgi\\'" . python-mode)
+         ("\\.pyx\\'" . python-pyx-mode))
   :config
   ;; Define run-python3 function
   (defun run-python3() (interactive)
@@ -40,3 +41,15 @@
  'after-init-hook
  (lambda()
    (add-to-list 'niboshi-mode-name-alist '(python-mode . "PY"))))
+
+;;-----------------------
+;; python-pyx-mode
+;;-----------------------
+(define-derived-mode python-pyx-mode
+  python-mode "Pyx"
+  "Major mode for pyx.
+  \\{python-pyx-mode-map}")
+
+(font-lock-add-keywords
+ 'python-pyx-mode
+ '(("\\<\\(cimport\\|cdef\\)\\>" . font-lock-keyword-face)))
