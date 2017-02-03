@@ -25,3 +25,12 @@
     (set-face-attribute 'smerge-refined-added         nil :foreground nil       :background nil)
     (set-face-attribute 'smerge-refined-removed       nil :foreground nil       :background nil)
     ))
+
+;;-----------------------
+;; magit-gh-pulls
+;;-----------------------
+(use-package magit-gh-pulls
+  :ensure t
+  :commands magit-gh-pulls-mode
+  :init
+  (add-hook 'magit-mode-hook 'turn-on-magit-gh-pulls))
