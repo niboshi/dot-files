@@ -40,7 +40,7 @@ term_fg_rgb() {
     local r="$1"
     local g="$2"
     local b="$3"
-    local color=$((16 + $r * 36 + $g * 6 +$b))
+    local color=$((16 + $r * 36 + $g * 6 + $b))
 
     echo -e "\e[38;5;${color}m"
 }
@@ -49,7 +49,7 @@ term_bg_rgb() {
     local r="$1"
     local g="$2"
     local b="$3"
-    local color=$((16 + $r * 36 + $g * 6 +$b))
+    local color=$((16 + $r * 36 + $g * 6 + $b))
 
     echo -e "\e[48;5;${color}m"
 }
@@ -139,6 +139,14 @@ unset -f _define_system_color_funcs
 #---------------------------
 # prompt
 #---------------------------
+_niboshi_prompt_envs() {
+    if [ ${#niboshi_envs[@]} -gt 0 ]; then
+        echo -n "$(term_fg_rgb 1 1 1) [$(term_fg_rgb 5 1 0)"
+        echo -n "${niboshi_envs[@]}"
+        echo -n "$(term_fg_rgb 1 1 1)]"
+    fi
+}
+
 _set_prompt() {
     case "$HOSTNAME" in
         amane)
@@ -168,7 +176,7 @@ _set_prompt() {
         platform=
     fi
 
-    local line1="\[$(term_fg_red)\]:\[$(term_fg_magenta)\]\[$(term_bold)\]\w\[$(term_reset)\]"
+    local line1="\$(_niboshi_prompt_envs)\[$(term_fg_red)\]:\[$(term_fg_magenta)\]\[$(term_bold)\]\w\[$(term_reset)\]"
     local line2="[${host_color_expr}\[$(term_bold)\]\u\[$(term_reset)\]@${host_color_expr}\[$(term_bold)\]\h\[$(term_reset)\]]$platform"'${hasjobs:+$(term_fg_blue)(\j jobs)$(term_reset)}'"\$ "
     PS1="${line1}\n${line2}"
 
