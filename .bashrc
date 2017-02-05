@@ -141,9 +141,33 @@ unset -f _define_system_color_funcs
 #---------------------------
 _niboshi_prompt_envs() {
     if [ ${#niboshi_envs[@]} -gt 0 ]; then
-        echo -n "$(term_fg_rgb 1 1 1) [$(term_fg_rgb 5 1 0)"
+        local col_bracket="$(term_fg_rgb 1 1 1)"
+        local col_env="$(term_fg_rgb 5 1 0)"
+        echo -n "${col_bracket}[${col_env}"
         echo -n "${niboshi_envs[@]}"
-        echo -n "$(term_fg_rgb 1 1 1)]"
+        echo -n "${col_bracket}]"
+    fi
+}
+_niboshi_prompt_tmux() {
+    if [ -z "$TMUX" ]; then
+        local lines="$(tmux ls 2>/dev/null)"
+        local n_total=$(echo -n "$lines" | grep . | wc -l)
+        if [ "$n_total" -gt 0 ]; then
+            local col_bracket="$(term_fg_rgb 1 1 1)"
+            local col_attached="$(term_fg_rgb 0 5 0)"
+            local col_detached="$(term_fg_rgb 5 0 0)"
+            local n_attached=$(echo "$lines" | grep -E '\(attached\)$' | wc -l)
+            local n_detached=$((n_total - n_attached))
+            echo -n "${col_bracket}("
+            echo -n "tmux "
+            if [ "$n_attached" -gt 0 ]; then
+                echo -n "${col_attached}${n_attached}"
+            fi
+            if [ "$n_detached" -gt 0 ]; then
+                echo -n "${col_detached}${n_detached}"
+            fi
+            echo -n "${col_bracket})"
+        fi
     fi
 }
 
@@ -176,7 +200,7 @@ _set_prompt() {
         platform=
     fi
 
-    local line1="\$(_niboshi_prompt_envs)\[$(term_fg_red)\]:\[$(term_fg_magenta)\]\[$(term_bold)\]\w\[$(term_reset)\]"
+    local line1="\[$(term_fg_red)\]:\$(_niboshi_prompt_envs)\$(_niboshi_prompt_tmux)\[$(term_fg_magenta)\]\[$(term_bold)\]\w\[$(term_reset)\]"
     local line2="[${host_color_expr}\[$(term_bold)\]\u\[$(term_reset)\]@${host_color_expr}\[$(term_bold)\]\h\[$(term_reset)\]]$platform"'${hasjobs:+$(term_fg_blue)(\j jobs)$(term_reset)}'"\$ "
     PS1="${line1}\n${line2}"
 
