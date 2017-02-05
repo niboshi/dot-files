@@ -300,19 +300,6 @@ Called via the `after-load-functions' special hook."
 (setq mouse-wheel-follow-mouse 't)
 
 ;;-----------------------
-;; Load init scripts
-;;-----------------------
-(niboshi-profile
- "Load init scripts"
- (lambda()
-   (dolist (base-dir '("~/.emacs.d/init-user" "~/.emacs.d/init"))
-     (let ((ignore-list '("." "..")))
-       (if (file-accessible-directory-p base-dir)
-           (dolist (file (directory-files base-dir))
-             (if (not (member file ignore-list))
-                 (load-file (concat base-dir "/" file)))))))))
-
-;;-----------------------
 ;; Misc
 ;;-----------------------
 (setq-default truncate-lines t)
@@ -358,6 +345,114 @@ Called via the `after-load-functions' special hook."
     (server-start)))
 
 ;;-----------------------
+;; Recent files
+;;-----------------------
+(use-package recentf
+  :ensure t
+  :commands recentf-open-files
+  :config
+  (setq recentf-save-file (concat "~/.emacs.d/recentf-" system-name))
+  (setq recentf-keep '(file-remote-p file-readable-p))
+  (setq recentf-max-saved-items 1000)
+  (setq recentf-max-menu-items 1000)
+  (setq recentf-auto-cleanup 'never)
+  ;; Start isearch automatically
+  (add-hook
+   'recentf-dialog-mode-hook
+   (lambda()
+     ;; C-g to close recentf buffer
+     (local-set-key (kbd "C-g") (lambda() (interactive) (kill-buffer (current-buffer))))
+     ;; Begin isearch-forward automatically
+     (run-with-timer 0.01 nil 'isearch-forward-regexp)))
+  (recentf-mode 1))
+
+;;-----------------------
+;; incremental search
+;;-----------------------
+(add-hook 'isearch-mode-hook
+          (lambda()
+            (define-key isearch-mode-map "\C-h" 'isearch-mode-help)
+            (define-key isearch-mode-map "\C-t" 'isearch-toggle-regexp)
+            (define-key isearch-mode-map "\C-c" 'isearch-toggle-case-fold)
+            (define-key isearch-mode-map "\C-j" 'isearch-edit-string)))
+
+;;-----------------------
+;; Put other buffer behind
+;;-----------------------
+(defun niboshi-put-other-buffer-behind()
+  (interactive)
+  (let ((win (car (cdr (window-list)))))
+    (if win
+        (let ((buf (window-buffer win)))
+          (if buf
+              (replace-buffer-in-windows buf))))))
+
+(niboshi-set-key (niboshi-make-hotkey "-") 'niboshi-put-other-buffer-behind)
+
+(defun niboshi-bring-message-buffer-to-front()
+  (let ((old-win (get-buffer-window)))
+    (progn
+      (switch-to-buffer-other-window "*Messages*")
+      (select-window old-win))))
+
+;;-----------------------
+;; Swap windows
+;;-----------------------
+;; Original: https://www.emacswiki.org/emacs/TransposeWindows
+(defun niboshi-transpose-windows (arg)
+  "Transpose the buffers shown in two windows."
+  (interactive "p")
+  (let ((selector (if (>= arg 0) 'next-window 'previous-window)))
+    (while (/= arg 0)
+      (let ((this-win (window-buffer))
+            (next-win (window-buffer (funcall selector))))
+        (set-window-buffer (selected-window) next-win)
+        (set-window-buffer (funcall selector) this-win)
+        (select-window (funcall selector)))
+      (setq arg (if (plusp arg) (1- arg) (1+ arg))))))
+
+(niboshi-set-key (niboshi-make-hotkey "x") 'niboshi-transpose-windows)
+
+;;-----------------------
+;; buffer-menu
+;;-----------------------
+(defun niboshi-buffer-menu-other-window()
+  (interactive)
+  (defvar niboshi-buffer-menu-other-window-old-buffer)
+  (setq niboshi-buffer-menu-other-window-old-buffer (get-buffer-window))
+  (add-hook 'Buffer-menu-mode-hook
+            (lambda()
+              (local-set-key (kbd "C-g") (lambda() (interactive)
+                                           (kill-buffer (current-buffer))
+                                           (select-window niboshi-buffer-menu-other-window-old-buffer)
+                                           (setq niboshi-buffer-menu-other-window-old-buffer nil)))))
+  (buffer-menu-other-window))
+(niboshi-set-key (kbd "C-x C-b") 'niboshi-buffer-menu-other-window)
+
+;;-----------------------
+;; switch-to-minibuffer
+;;-----------------------
+(defun niboshi-switch-to-minibuffer ()
+  "Switch to minibuffer window."
+  (interactive)
+  (let ((win (active-minibuffer-window)))
+    (if win
+        (select-window win)
+      (message "Minibuffer is not active"))))
+
+(niboshi-set-key (niboshi-make-hotkey "m") 'niboshi-switch-to-minibuffer)
+
+;;-----------------------
+;; visible-bell
+;;-----------------------
+ (defun niboshi-ring-bell-function ()
+   (invert-face 'mode-line)
+   (run-with-timer 0.1 nil 'invert-face 'mode-line))
+
+ (setq visible-bell nil
+       ring-bell-function 'niboshi-ring-bell-function)
+
+;;-----------------------
 ;; Line number
 ;;-----------------------
 (use-package linum
@@ -388,23 +483,6 @@ Called via the `after-load-functions' special hook."
   (if (display-graphic-p)
       (setq-default fci-rule-color "gray11")
     (setq-default fci-rule-color "color-234")))
-
-;;-----------------------
-;; buffer-menu
-;;-----------------------
-(defun niboshi-buffer-menu-other-window()
-  (interactive)
-  (defvar niboshi-buffer-menu-other-window-old-buffer)
-  (setq niboshi-buffer-menu-other-window-old-buffer (get-buffer-window))
-  (add-hook 'Buffer-menu-mode-hook
-            (lambda()
-              (local-set-key (kbd "C-g") (lambda() (interactive)
-                                           (kill-buffer (current-buffer))
-                                           (select-window niboshi-buffer-menu-other-window-old-buffer)
-                                           (setq niboshi-buffer-menu-other-window-old-buffer nil)))))
-  (buffer-menu-other-window))
-(niboshi-set-key (kbd "C-x C-b") 'niboshi-buffer-menu-other-window)
-
 
 ;;-----------------------
 ;; ido-mode (Interactive buffer switch, etc.)
@@ -451,6 +529,13 @@ Called via the `after-load-functions' special hook."
               (define-key ido-completion-map (kbd "C-p") 'ido-prev-match)
               (define-key ido-completion-map (kbd "<down>") 'ido-next-match)
               (define-key ido-completion-map (kbd "<up>") 'ido-prev-match))))
+
+;; idomenu
+(use-package idomenu
+  :ensure t
+  :bind (("C-c ; i" . idomenu))
+)
+
 
 ;;-----------------------
 ;; Company
@@ -522,34 +607,6 @@ Called via the `after-load-functions' special hook."
 
 
 ;;-----------------------
-;; Disable startup "For information..." message
-;; (Note: inhibit-startup-* method also works but it requires hardcoded user name)
-;;-----------------------
-(defun display-startup-echo-area-message () ())
-
-;;-----------------------
-;; Recent files
-;;-----------------------
-(use-package recentf
-  :ensure t
-  :commands recentf-open-files
-  :config
-  (setq recentf-save-file (concat "~/.emacs.d/recentf-" system-name))
-  (setq recentf-keep '(file-remote-p file-readable-p))
-  (setq recentf-max-saved-items 1000)
-  (setq recentf-max-menu-items 1000)
-  (setq recentf-auto-cleanup 'never)
-  ;; Start isearch automatically
-  (add-hook
-   'recentf-dialog-mode-hook
-   (lambda()
-     ;; C-g to close recentf buffer
-     (local-set-key (kbd "C-g") (lambda() (interactive) (kill-buffer (current-buffer))))
-     ;; Begin isearch-forward automatically
-     (run-with-timer 0.01 nil 'isearch-forward-regexp)))
-  (recentf-mode 1))
-
-;;-----------------------
 ;; Whitespace
 ;;-----------------------
 (use-package whitespace
@@ -574,63 +631,6 @@ Called via the `after-load-functions' special hook."
       (set-face-attribute 'whitespace-empty nil :background "red" :foreground nil)
       (set-face-attribute 'whitespace-trailing nil :background "red" :foreground nil)
       )))
-
-;;-----------------------
-;; visible-bell
-;;-----------------------
- (defun niboshi-ring-bell-function ()
-   (invert-face 'mode-line)
-   (run-with-timer 0.1 nil 'invert-face 'mode-line))
-
- (setq visible-bell nil
-       ring-bell-function 'niboshi-ring-bell-function)
-
-;;-----------------------
-;; incremental search
-;;-----------------------
-(add-hook 'isearch-mode-hook
-          (lambda()
-            (define-key isearch-mode-map "\C-h" 'isearch-mode-help)
-            (define-key isearch-mode-map "\C-t" 'isearch-toggle-regexp)
-            (define-key isearch-mode-map "\C-c" 'isearch-toggle-case-fold)
-            (define-key isearch-mode-map "\C-j" 'isearch-edit-string)))
-
-;;-----------------------
-;; Put other buffer behind
-;;-----------------------
-(defun niboshi-put-other-buffer-behind()
-  (interactive)
-  (let ((win (car (cdr (window-list)))))
-    (if win
-        (let ((buf (window-buffer win)))
-          (if buf
-              (replace-buffer-in-windows buf))))))
-
-(niboshi-set-key (niboshi-make-hotkey "-") 'niboshi-put-other-buffer-behind)
-
-(defun niboshi-bring-message-buffer-to-front()
-  (let ((old-win (get-buffer-window)))
-    (progn
-      (switch-to-buffer-other-window "*Messages*")
-      (select-window old-win))))
-
-;;-----------------------
-;; Swap windows
-;;-----------------------
-;; Original: https://www.emacswiki.org/emacs/TransposeWindows
-(defun niboshi-transpose-windows (arg)
-  "Transpose the buffers shown in two windows."
-  (interactive "p")
-  (let ((selector (if (>= arg 0) 'next-window 'previous-window)))
-    (while (/= arg 0)
-      (let ((this-win (window-buffer))
-            (next-win (window-buffer (funcall selector))))
-        (set-window-buffer (selected-window) next-win)
-        (set-window-buffer (funcall selector) this-win)
-        (select-window (funcall selector)))
-      (setq arg (if (plusp arg) (1- arg) (1+ arg))))))
-
-(niboshi-set-key (niboshi-make-hotkey "x") 'niboshi-transpose-windows)
 
 ;;-----------------------
 ;; compilation
@@ -722,14 +722,6 @@ Called via the `after-load-functions' special hook."
 )
 
 ;;-----------------------
-;; idomenu
-;;-----------------------
-(use-package idomenu
-  :ensure t
-  :bind (("C-c ; i" . idomenu))
-)
-
-;;-----------------------
 ;; vc
 ;;-----------------------
 ;; Disable backends except SVN
@@ -744,17 +736,17 @@ Called via the `after-load-functions' special hook."
   :mode (("\\Makefile.*\\'" . makefile-mode)))
 
 ;;-----------------------
-;; switch-to-minibuffer
+;; Load init scripts
 ;;-----------------------
-(defun niboshi-switch-to-minibuffer ()
-  "Switch to minibuffer window."
-  (interactive)
-  (let ((win (active-minibuffer-window)))
-    (if win
-        (select-window win)
-      (message "Minibuffer is not active"))))
-
-(niboshi-set-key (niboshi-make-hotkey "m") 'niboshi-switch-to-minibuffer)
+(niboshi-profile
+ "Load init scripts"
+ (lambda()
+   (dolist (base-dir '("~/.emacs.d/init-user" "~/.emacs.d/init"))
+     (let ((ignore-list '("." "..")))
+       (if (file-accessible-directory-p base-dir)
+           (dolist (file (directory-files base-dir))
+             (if (not (member file ignore-list))
+                 (ignore-errors (load-file (concat base-dir "/" file))))))))))
 
 ;;-----------------------
 ;; Tips
@@ -770,6 +762,12 @@ Called via the `after-load-functions' special hook."
                                    (insert-file-contents filename)
                                    (buffer-string)) "\n"))
                     (message (concat grid-l line))))))))
+
+;;-----------------------
+;; Disable startup "For information..." message
+;; (Note: inhibit-startup-* method also works but it requires hardcoded user name)
+;;-----------------------
+(defun display-startup-echo-area-message () ())
 
 ;;-----------------------
 
