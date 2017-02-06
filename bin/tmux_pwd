@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+
+pwd="$1"
+if [ "$pwd" == "$HOME" ]; then
+    echo -n "~"
+    exit
+fi
+
+pwd="$(basename "$pwd")"
+if [ ${#pwd} -gt 15 ]; then
+   pwd=…"${pwd: -14}"
+fi
+
+echo -n "$pwd"
+

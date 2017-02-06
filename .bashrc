@@ -150,22 +150,34 @@ _niboshi_prompt_envs() {
 }
 _niboshi_prompt_tmux() {
     if [ -z "$TMUX" ]; then
-        local lines="$(tmux ls 2>/dev/null)"
-        local n_total=$(echo -n "$lines" | grep . | wc -l)
-        if [ "$n_total" -gt 0 ]; then
-            local col_bracket="$(term_fg_rgb 1 1 1)"
-            local col_attached="$(term_fg_rgb 0 5 0)"
-            local col_detached="$(term_fg_rgb 5 0 0)"
-            local n_attached=$(echo "$lines" | grep -E '\(attached\)$' | wc -l)
-            local n_detached=$((n_total - n_attached))
-            echo -n "${col_bracket}("
-            echo -n "tmux "
-            if [ "$n_attached" -gt 0 ]; then
-                echo -n "${col_attached}${n_attached}"
-            fi
-            if [ "$n_detached" -gt 0 ]; then
-                echo -n "${col_detached}${n_detached}"
-            fi
+        local col_bracket="$(term_fg_rgb 1 1 1)"
+        local col_attached="$(term_fg_rgb 0 5 0)"
+        local col_detached="$(term_fg_rgb 5 0 0)"
+
+        local lines=()
+        while read line; do if [ "${#line}" -gt 0 ]; then lines+=("$line"); fi; done <<< "$(tmux ls 2>/dev/null)"
+
+        if [ "${#lines[@]}" -gt 0 ]; then
+            echo -n "${col_bracket}(tmux"
+
+            local i=0
+            while [ $i -lt "${#lines[@]}" ]; do
+                local line="${lines[i]}"
+                local session_name="$(echo "$line" | sed -r 's/([^:]+):.*/\1/')"
+                local is_attached=$(echo "$line" | grep -E '\(attached\)$' | wc -l)
+                local col
+
+                if [ "$is_attached" == 1 ]; then
+                    col="$col_attached"
+                else
+                    col="$col_detached"
+                fi
+
+                echo -n " ${col}${session_name}"
+
+                i=$((i + 1))
+            done
+
             echo -n "${col_bracket})"
         fi
     fi
