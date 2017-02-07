@@ -16,10 +16,10 @@ fi
 #---------------------------
 # PATH
 #---------------------------
-PATH="$PATH:~/bin"
-PATH="$PATH:~/local/bin"
+PATH="$HOME/bin:$PATH"
+PATH="$HOME/local/bin:$PATH"
 for bin in $(find ~/.bindirs -mindepth 1 -maxdepth 1 2>/dev/null); do
-    PATH="$PATH:$bin"
+    PATH="$bin:$PATH"
 done
 
 export PATH

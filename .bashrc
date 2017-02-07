@@ -20,6 +20,30 @@ tty -s && stty -ixon
 bind '"\eh": backward-kill-word'
 
 #---------------------------
+# env
+#---------------------------
+export niboshi_envs=()
+niboshi-env() {
+    local env
+    for env in $@; do
+        source $HOME/env/$env
+    done
+}
+
+_niboshi-add-env() {
+    local env=$1
+    local already_set=0
+    local env0
+    for env0 in ${niboshi_envs[@]}; do if [ "$env" == "$env0" ]; then already_set=1; break; fi; done
+
+    if [ $already_set == 0 ]; then
+        niboshi_envs=("${niboshi_envs[@]}" $env)
+    fi
+
+    return $already_set
+}
+
+#---------------------------
 # history
 #---------------------------
 HISTSIZE=20000
