@@ -22,10 +22,20 @@ bind '"\eh": backward-kill-word'
 #---------------------------
 # Utility functions
 #---------------------------
-niboshi-add-path-checked() {
+_niboshi-add-path() {
+    local checked="$1"
+    shift
+
     local var="$1"
     local path="$2"
     local old_value="${!var}"
+
+    if [ "$checked" == 1 ]; then
+        if [ ! -d "$path" ]; then
+            echo "No such directory: $path" >&2
+            return 1
+        fi
+    fi
 
     if [ -z "$old_value" ]; then
         export $var="$path"
@@ -38,6 +48,14 @@ niboshi-add-path-checked() {
     if [[ "$old_value" == *":$path"   ]]; then return; fi
 
     export $var="$path":"$old_value"
+}
+
+niboshi-add-path() {
+    _niboshi-add-path 0 "$@"
+}
+
+niboshi-add-path-checked() {
+    _niboshi-add-path 1 "$@"
 }
 
 #---------------------------
