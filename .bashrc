@@ -20,6 +20,27 @@ tty -s && stty -ixon
 bind '"\eh": backward-kill-word'
 
 #---------------------------
+# Utility functions
+#---------------------------
+niboshi-add-path-checked() {
+    local var="$1"
+    local path="$2"
+    local old_value="${!var}"
+
+    if [ -z "$old_value" ]; then
+        export $var="$path"
+        return
+    fi
+
+    if [[ "$old_value" ==   "$path"   ]]; then return; fi
+    if [[ "$old_value" == *":$path:"* ]]; then return; fi
+    if [[ "$old_value" ==   "$path:"* ]]; then return; fi
+    if [[ "$old_value" == *":$path"   ]]; then return; fi
+
+    export $var="$path":"$old_value"
+}
+
+#---------------------------
 # env
 #---------------------------
 export niboshi_envs=()
