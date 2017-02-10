@@ -20,7 +20,7 @@ export PATH
 PATH="$HOME/bin:$PATH"
 PATH="$HOME/local/bin:$PATH"
 PATH="$HOME/.local/bin:$PATH"
-for bin in $(find ~/.bindirs -mindepth 1 -maxdepth 1 2>/dev/null); do
+for bin in $(find ~/.bindirs -mindepth 1 -maxdepth 1 2>/dev/null | sort -r); do
     PATH="$bin:$PATH"
 done
 
