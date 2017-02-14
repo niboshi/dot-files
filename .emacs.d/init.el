@@ -215,6 +215,10 @@ Called via the `after-load-functions' special hook."
 (when (not (version< emacs-version "24.4"))
   (setq load-prefer-newer t))
 
+;; Follow symlinks in find-file
+(setq-default find-file-visit-truename t)
+
+
 ;;-----------------------
 ;; MELPA
 ;;-----------------------
