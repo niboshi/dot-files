@@ -729,6 +729,12 @@ Called via the `after-load-functions' special hook."
 )
 
 ;;-----------------------
+;; helm-tags
+;;-----------------------
+(use-package helm-tags
+  :bind (("M-," . helm-etags-select)))
+
+;;-----------------------
 ;; vc
 ;;-----------------------
 ;; Disable backends except SVN
