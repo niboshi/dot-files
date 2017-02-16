@@ -150,6 +150,9 @@
     (niboshi-set-key (kbd "C-x <end>")  'bury-buffer)
     (niboshi-set-key (kbd "C-x <home>") 'unbury-buffer)
 
+    ;; Buffer switch
+    (niboshi-set-key (kbd "C-x C-x") (lambda () (interactive) (switch-to-buffer (other-buffer))))
+
     ;; Disable mouse commands
     (niboshi-set-key [down-mouse-2] 'ignore)
     (niboshi-set-key [mouse-2] 'ignore)
