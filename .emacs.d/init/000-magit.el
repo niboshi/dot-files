@@ -30,6 +30,7 @@
 ;; magit-gh-pulls
 ;;-----------------------
 (use-package magit-gh-pulls
+  :disable
   :ensure t
   :commands magit-gh-pulls-mode
   :init

@@ -72,6 +72,9 @@
 ;; Disable ALT-key hook, to re-enable Windows system menu
 (defvar w32-pass-alt-to-system 1)
 
+;; Disable compose-mail function
+(defun compose-mail() (interactive))
+
 ;;-----------------------
 ;; Essential keybinding
 ;;-----------------------
@@ -152,6 +155,9 @@
 
     ;; Buffer switch
     (niboshi-set-key (kbd "C-x C-x") (lambda () (interactive) (switch-to-buffer (other-buffer))))
+
+    ;; Kill this buffer
+    (niboshi-set-key (kbd "C-x C-k") 'kill-this-buffer)
 
     ;; Disable mouse commands
     (niboshi-set-key [down-mouse-2] 'ignore)

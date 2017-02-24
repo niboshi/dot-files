@@ -40,6 +40,7 @@
 ;; Jedi
 ;;-----------------------
 (use-package jedi
+  :disable
   :ensure t
   :commands jedi:setup
   :init
