@@ -561,6 +561,7 @@ Called via the `after-load-functions' special hook."
   (add-hook 'go-mode-hook
             (lambda()
               (set (make-local-variable 'company-backends) '(company-go))))
+  (setq company-idle-delay 0)
   :config
   (add-to-list 'company-backends 'company-racer)
   (add-to-list 'company-backends 'company-jedi)
