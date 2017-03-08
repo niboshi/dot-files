@@ -348,6 +348,9 @@ Called via the `after-load-functions' special hook."
   (message buffer-file-name))
 (niboshi-set-key (niboshi-make-hotkey "p") 'niboshi-print-current-buffer-file-name)
 
+;;
+(setq echo-keystrokes 0.01)
+
 ;;-----------------------
 ;; Server
 ;;-----------------------
