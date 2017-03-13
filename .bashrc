@@ -65,7 +65,7 @@ export niboshi_envs=()
 niboshi-env() {
     local env
     for env in $@; do
-        local env_file=($(find $HOME/env -type f -name "$env"))
+        local env_file=($(find -L $HOME/env -type f -name "$env"))
         if [ ${#env_file[@]} -ne 1 ]; then
             echo "Unknown env: $env" >&2
         fi
