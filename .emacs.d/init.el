@@ -323,11 +323,11 @@ Called via the `after-load-functions' special hook."
 (defun niboshi-eval-wrapper(eval-func)
   (progn
     (niboshi-bring-message-buffer-to-front)
-    (message "--- eval")
+    (message "--- eval?")
+    (set-window-point (get-buffer-window "*Messages*") (point-max))
     (call-interactively eval-func)
-    (message "OK")
-    (with-current-buffer "*Messages*"
-      (goto-char (point-max)))))
+    (message ".")
+    (set-window-point (get-buffer-window "*Messages*") (point-max))))
 
 (when t
   (niboshi-set-key (kbd "C-c e e") (lambda() (interactive) (niboshi-eval-wrapper 'eval-expression)))
