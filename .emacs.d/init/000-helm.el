@@ -6,7 +6,9 @@
   :bind (("M-," . helm-etags-select))
   :init
   (niboshi-set-key (kbd "C-x C-r") 'helm-recentf)
-  (niboshi-set-key (kbd "C-x C-b") 'helm-buffers-list))
+  (niboshi-set-key (kbd "C-x C-b") 'helm-buffers-list)
+  :config
+  (setq helm-recentf-fuzzy-match t))
 
 ;;-----------------------
 ;; helm-swoop
