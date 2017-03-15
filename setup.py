@@ -3,6 +3,7 @@
 import os
 import sys
 import argparse
+import shutil
 
 THIS_DIR = os.path.dirname(os.path.realpath(__file__))
 
@@ -36,7 +37,10 @@ def do_link(src_path, dst_path, force=False):
 		if cancel:
 			return False
 
-		os.remove(dst_path)
+		if os.path.isdir(dst_path):
+			shutil.rmtree(dst_path)
+		else:
+			os.remove(dst_path)
 
 	os.symlink(src_path, dst_path)
 	return True
