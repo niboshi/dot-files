@@ -248,7 +248,6 @@ Called via the `after-load-functions' special hook."
   (interactive)
   (progn
     (message "niboshi-setup: Starting...")
-    (jedi:install-server)
     (message "niboshi-setup: Finished")
     ))
 
@@ -513,12 +512,10 @@ Called via the `after-load-functions' special hook."
   (setq company-idle-delay 0)
   :config
   (add-to-list 'company-backends 'company-racer)
-  (add-to-list 'company-backends 'company-jedi)
   (niboshi-set-key (niboshi-make-hotkey "TAB") 'company-complete)
   )
 
 (use-package company-go :ensure t)
-(use-package company-jedi :ensure t)
 (use-package company-racer :ensure t)
 
 ;;-----------------------

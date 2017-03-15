@@ -36,18 +36,6 @@
             (setq tab-width 4)
             (setq python-indent-offset 4)))
 
-;;-----------------------
-;; Jedi
-;;-----------------------
-(use-package jedi
-  :disable
-  :ensure t
-  :commands jedi:setup
-  :init
-  (defvar jedi:complete-on-dot t)
-  (defvar jedi:use-shortcuts t)
-  (add-hook 'python-mode-hook 'jedi:setup))
-
 
 ;;-----------------------
 ;; Misc
