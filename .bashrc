@@ -68,6 +68,7 @@ niboshi-env() {
         local env_file=($(find -L $HOME/env -type f -name "$env"))
         if [ ${#env_file[@]} -ne 1 ]; then
             echo "Unknown env: $env" >&2
+            return 1
         fi
         source "${env_file[0]}"
     done
