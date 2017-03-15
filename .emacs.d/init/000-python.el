@@ -50,3 +50,9 @@
 ;; Open egg files
 ;;-----------------------
 (add-to-list 'auto-mode-alist '("\\.egg\\'" . archive-mode))
+
+;;-----------------------
+;; Syntax checkers
+;;-----------------------
+(use-package py-autopep8 :ensure t)
+(use-package flycheck-pyflakes :ensure t)
