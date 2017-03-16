@@ -475,11 +475,9 @@ Called via the `after-load-functions' special hook."
   :init
   (add-hook 'find-file-hook (lambda() (linum-mode 1)))
   :config
-  (if (display-graphic-p)
-      (set-face-attribute 'linum nil :background nil :foreground "#444444")
-    (progn
-      (setq linum-format "%d ")
-      (set-face-attribute 'linum nil :background nil :foreground "brightblack"))))
+  (set-face-attribute 'linum nil :background nil :foreground "#555555")
+  (unless (display-graphic-p)
+      (setq linum-format "%d ")))
 
 ;;-----------------------
 ;; fill-column-indicator
@@ -494,9 +492,7 @@ Called via the `after-load-functions' special hook."
   :config
   (setq-default fci-always-use-textual-rule t) ; Default behaviour (draw line by image) causes line height problem.
   (setq-default fci-rule-column 80)
-  (if (display-graphic-p)
-      (setq-default fci-rule-color "gray11")
-    (setq-default fci-rule-color "color-234")))
+  (setq-default fci-rule-color "#555555"))
 
 ;;-----------------------
 ;; Company
