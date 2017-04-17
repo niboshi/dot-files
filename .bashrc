@@ -87,6 +87,16 @@ _niboshi-add-env() {
     return $already_set
 }
 
+niboshi-conda-env() {
+    local conda=$1
+    if _niboshi-add-env $conda; then
+        local conda_dir="$HOME/anaconda/$conda"
+        niboshi-add-path-checked PATH               $conda_dir/bin
+        niboshi-add-path-checked C_INCLUDE_PATH     $conda_dir/include
+        niboshi-add-path-checked CPLUS_INCLUDE_PATH $conda_dir/include
+    fi
+}
+
 #---------------------------
 # history
 #---------------------------
@@ -262,6 +272,9 @@ _set_prompt() {
         coyote)
             host_color=blue
             ;;
+        surface-pro2)
+            host_color=cyan
+            ;;
         pi)
             host_color=red
             ;;
@@ -271,6 +284,8 @@ _set_prompt() {
     esac
 
     local host_color_expr='\[$(term_fg_'${host_color}')\]'
+    local username_color_expr='\[$(term_fg_gray 13)\]'
+
     PROMPT_COMMAND='hasjobs=$(jobs -p)'
 
     local platform
@@ -281,7 +296,7 @@ _set_prompt() {
     fi
 
     local line1="\[$(term_fg_red)\]:\$(_niboshi_prompt_envs)\$(_niboshi_prompt_tmux)\[$(term_fg_magenta)\]\[$(term_bold)\]\w\[$(term_reset)\]"
-    local line2="[${host_color_expr}\[$(term_bold)\]\u\[$(term_reset)\]@${host_color_expr}\[$(term_bold)\]\h\[$(term_reset)\]]$platform"'${hasjobs:+$(term_fg_blue)(\j jobs)$(term_reset)}'"\$ "
+    local line2="[${username_color_expr}\[$(term_bold)\]\u\[$(term_reset)\]@${host_color_expr}\[$(term_bold)\]\h\[$(term_reset)\]]$platform"'${hasjobs:+$(term_fg_blue)(\j jobs)$(term_reset)}'"\$ "
     PS1="${line1}\n${line2}"
 
     export host_color
