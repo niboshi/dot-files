@@ -1,0 +1,48 @@
+#!/usr/bin/env python3
+
+import os
+import sys
+import contextlib
+import tempfile
+import shutil
+import urllib.request
+import subprocess
+
+
+@contextlib.contextmanager
+def tempdir():
+    work_dir = tempfile.mkdtemp()
+    try:
+        yield work_dir
+    finally:
+        try:
+            shutil.rmtree(work_dir)
+        except IOError:
+            pass
+
+
+def execute(cmd):
+    ret = subprocess.call(cmd)
+    if ret != 0:
+        raise RuntimeError()
+
+
+def main():
+    url = 'https://repo.continuum.io/archive/Anaconda3-4.4.0-Linux-x86_64.sh'
+    with tempdir() as work_dir:
+        temp_file = os.path.join(work_dir, 't.sh')
+
+        print("Downloading...")
+        urllib.request.urlretrieve(url, temp_file)
+
+        print("Installing...")
+        execute([
+            '/usr/bin/bash',
+            temp_file,
+            '-b',
+            '-p', os.path.expanduser('~/anaconda/anaconda3/'),
+        ])
+
+
+if __name__ == '__main__':
+    main()
