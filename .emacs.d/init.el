@@ -154,7 +154,7 @@
     (niboshi-set-key (kbd "C-x <home>") 'unbury-buffer)
 
     ;; Buffer switch
-    (niboshi-set-key (kbd "C-x C-x") (lambda () (interactive) (switch-to-buffer (other-buffer))))
+    (niboshi-set-key (kbd "C-x C-x") (lambda () (interactive) (switch-to-buffer (other-buffer (current-buffer) t))))
 
     ;; Kill this buffer
     (niboshi-set-key (kbd "C-x C-k") 'kill-this-buffer)
