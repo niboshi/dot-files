@@ -30,25 +30,27 @@ def execute(cmd):
 def setup(python_version):
     print("Setting up anaconda for Python {}...".format(python_version))
     url_map = {
-        2: 'https://repo.continuum.io/archive/Anaconda2-4.4.0-Linux-x86_64.sh',
-        3: 'https://repo.continuum.io/archive/Anaconda3-4.4.0-Linux-x86_64.sh',
+        2: 'https://repo.continuum.io/archive/Anaconda2-5.0.1-Linux-x86_64.sh',
+        3: 'https://repo.continuum.io/archive/Anaconda3-5.0.1-Linux-x86_64.sh',
     }
 
     url = url_map[python_version]
+    install_dir = os.path.expanduser('~/anaconda/anaconda{}/'.format(python_version))
 
-    with tempdir() as work_dir:
-        temp_file = os.path.join(work_dir, 't.sh')
+    if not os.path.isdir(install_dir):
+        with tempdir() as work_dir:
+            temp_file = os.path.join(work_dir, 't.sh')
 
-        print("Downloading...")
-        urllib.request.urlretrieve(url, temp_file)
+            print("Downloading...")
+            urllib.request.urlretrieve(url, temp_file)
 
-        print("Installing...")
-        execute([
-            '/usr/bin/env', 'bash',
-            temp_file,
-            '-b',
-            '-p', os.path.expanduser('~/anaconda/anaconda{}/'.format(python_version)),
-        ])
+            print("Installing...")
+            execute([
+                '/usr/bin/env', 'bash',
+                temp_file,
+                '-b',
+                '-p', install_dir,
+            ])
 
 
 def main():
