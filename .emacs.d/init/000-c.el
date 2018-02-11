@@ -6,7 +6,8 @@
             (setq tab-width 4)
             (setq c-basic-offset tab-width)
             (c-set-offset 'arglist-intro '++)
-            (setq indent-tabs-mode t)))
+            (setq indent-tabs-mode t)
+            (setq c-auto-line nil)))
 
 ;;-----------------------
 ;; ggtags
