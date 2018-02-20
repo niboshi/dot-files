@@ -7,7 +7,8 @@
             (setq c-basic-offset tab-width)
             (c-set-offset 'arglist-intro '++)
             (setq indent-tabs-mode t)
-            (setq c-auto-line nil)))
+            (setq c-auto-line nil))
+            (niboshi-set-key (kbd "C-c ; f") 'clang-format-buffer))
 
 ;;-----------------------
 ;; ggtags
