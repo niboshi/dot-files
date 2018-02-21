@@ -29,14 +29,14 @@ def execute(cmd):
 
 def setup(python_version):
     assert python_version in (2, 3)
-    print("Setting up anaconda for Python {}...".format(python_version))
+    print("Setting up miniconda for Python {}...".format(python_version))
     url_map = {
-        2: 'https://repo.continuum.io/archive/Anaconda2-5.0.1-Linux-x86_64.sh',
-        3: 'https://repo.continuum.io/archive/Anaconda3-5.0.1-Linux-x86_64.sh',
+        2: 'https://repo.continuum.io/miniconda/Miniconda2-latest-Linux-x86_64.sh',
+        3: 'https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh',
     }
 
     url = url_map[python_version]
-    install_dir = os.path.expanduser('~/anaconda/anaconda{}/'.format(python_version))
+    install_dir = os.path.expanduser('~/conda/py{}/'.format(python_version))
 
     if not os.path.isdir(install_dir):
         with tempdir() as work_dir:
