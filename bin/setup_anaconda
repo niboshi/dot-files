@@ -28,6 +28,7 @@ def execute(cmd):
 
 
 def setup(python_version):
+    assert python_version in (2, 3)
     print("Setting up anaconda for Python {}...".format(python_version))
     url_map = {
         2: 'https://repo.continuum.io/archive/Anaconda2-5.0.1-Linux-x86_64.sh',
@@ -53,10 +54,13 @@ def setup(python_version):
             ])
 
 
-def main():
-    setup(2)
-    setup(3)
+def main(args):
+    if len(args) == 0:
+        setup(2)
+        setup(3)
+    else:
+        setup(int(args[0]))
 
 
 if __name__ == '__main__':
-    main()
+    main(sys.argv[1:])
