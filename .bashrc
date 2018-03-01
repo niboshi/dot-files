@@ -88,9 +88,9 @@ _niboshi-add-env() {
 }
 
 niboshi-conda-env() {
-    local conda=$1
-    if _niboshi-add-env $conda; then
-        local conda_dir="$HOME/anaconda/$conda"
+    local py_ver=$1
+    if _niboshi-add-env "conda${py_ver}"; then
+        local conda_dir="$HOME/conda/py${py_ver}"
         niboshi-add-path-checked PATH               $conda_dir/bin
         niboshi-add-path-checked C_INCLUDE_PATH     $conda_dir/include
         niboshi-add-path-checked CPLUS_INCLUDE_PATH $conda_dir/include
