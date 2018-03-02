@@ -3,6 +3,7 @@
     name = niboshi
 [core]
     editor = vi
+	excludesfile = ~/.gitignore
 
 
 # http://stackoverflow.com/questions/1057564/pretty-git-branch-graphs

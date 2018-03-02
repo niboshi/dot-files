@@ -16,6 +16,7 @@ FILE_LIST = [
 	(".profile", None),
 	(".vimrc", None),
 	(".gitconfig", None),
+	(".gitignore", None),
 	(".inputrc", None),
 	("bin", ".bindirs/dot-files"),
 ]
