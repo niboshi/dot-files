@@ -597,6 +597,7 @@ Called via the `after-load-functions' special hook."
             (progn
               (setq compilation-scroll-output 'first-error)
               (setq compilation-auto-jump-to-first-error t)
+              (setq truncate-lines nil)
               )))
 
 ;;-----------------------
@@ -637,8 +638,8 @@ Called via the `after-load-functions' special hook."
 ;;-----------------------
 ;; Disable truncate-lines for special buffers (whose name is surrounded by * *)
 (defun niboshi-choose-truncate-lines()
-  (when (string-match "^\*.*\*$" (buffer-name))
-    (setq truncate-lines t)))
+  (cond ((eq major-mode 'compilation-mode) ())
+        ((string-match "^\*.*\*$" (buffer-name)) (setq truncate-lines t))))
 ;; Choose mode line text
 (defvar niboshi-mode-name-alist
   '(
