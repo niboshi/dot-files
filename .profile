@@ -13,6 +13,9 @@ else
     export NIBOSHI_IS_CYGWIN=0
 fi
 
+# Enable touchpanel in Firefox
+export MOZ_USE_XINPUT2=1
+
 #---------------------------
 # PATH
 #---------------------------
