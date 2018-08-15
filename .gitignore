@@ -1,3 +1,4 @@
 TAGS
 .projectile
 .dir-locals.el
+.pytest_cache
