@@ -595,9 +595,17 @@ Called via the `after-load-functions' special hook."
 (add-hook 'compilation-mode-hook
           (lambda ()
             (progn
+              ;; compilation-scroll-output controls automatic scroll behavior.
+              ;; non-nil: Automatic scroll is enabled
+              ;; 'first-error: Automatically scroll the buffer until the first error
               (setq compilation-scroll-output 'first-error)
-              (setq compilation-auto-jump-to-first-error t)
+              (setq compilation-auto-jump-to-first-error nil)
               (setq truncate-lines nil)
+              ;; compilation-skip-threshold controls next-error and previous-error behavior.
+              ;; 0: Don't skip anything
+              ;; 1: Skip anything less than warning
+              ;; 2: Skip anything less than error
+              (setq compilation-skip-threshold 2)
               )))
 
 ;;-----------------------
