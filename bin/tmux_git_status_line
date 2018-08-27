@@ -1,0 +1,50 @@
+#!/usr/bin/env bash
+
+col_dirty="#[bg=red,fg=white]"
+col_any_progress="#[bg=red,fg=white]"
+col_blue="#[bg=default,fg=blue]"
+col_clean="#[bg=default,fg=colour28]"
+col_git="#[bg=default,fg=gray]"
+col_bracket="#[bg=default,fg=black]"
+col_stash="#[bg=colour237,fg=white]"
+col_branch="#[bg=default,fg=colour166]"
+
+
+if [ $# -gt 0 ]; then
+    dir="$1"
+else
+    dir="$PWD"
+fi
+
+inside_git=$(git -C "$dir" rev-parse --is-inside-work-tree 2>/dev/null)
+if [ "$inside_git" == "true" ]; then
+    branch=$(git -C "$dir" rev-parse --abbrev-ref HEAD)
+    stash_count=$(git -C "$dir" stash list | wc -l)
+    echo -n "${col_bracket}[${col_git}git"
+    echo -n " ${col_branch}$branch"
+    # clean or dirty?
+    if [ -z "$(git -C "$dir" status --porcelain --untracked-files=no)" ]; then
+        echo -n " ${col_clean}clean"
+    else
+        echo -n " ${col_dirty}dirty"
+    fi
+    # stash
+    if [ $stash_count -gt 0 ]; then
+        echo -ne " ${col_stash}\u2261$stash_count"
+    fi
+    # rebase in progress?
+    if test -d "$(git -C "$dir" rev-parse --git-path rebase-merge)" || test -d "$(git -C "$dir" rev-parse --git-path rebase-apply)"; then
+        echo -n " ${col_any_progress}!rebase!"
+    fi
+    # cherry-pick in progress?
+    if test -f "$(git -C "$dir" rev-parse --git-path CHERRY_PICK_HEAD)"; then
+        echo -n " ${col_any_progress}!cherry-pick!"
+    fi
+    # merge in progress?
+    if test -f "$(git -C "$dir" rev-parse --git-path MERGE_HEAD)"; then
+        echo -n " ${col_any_progress}!merge!"
+    fi
+    # TODO
+    echo -n "${col_bracket}]"
+    echo
+fi

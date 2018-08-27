@@ -295,9 +295,9 @@ _set_prompt() {
         platform=
     fi
 
-    local line1="\[$(term_fg_red)\]:\$(_niboshi_prompt_envs)\$(_niboshi_prompt_tmux)\[$(term_fg_magenta)\]\[$(term_bold)\]\w\[$(term_reset)\]"
+    local line1="$(term_fg_gray 10)\$(date \"+%m/%d %H:%M:%S\")$(term_reset) \[$(term_fg_red)\]:\$(_niboshi_prompt_envs)\$(_niboshi_prompt_tmux)\[$(term_fg_magenta)\]\[$(term_bold)\]\w\[$(term_reset)\]"
     local line2="[${username_color_expr}\[$(term_bold)\]\u\[$(term_reset)\]@${host_color_expr}\[$(term_bold)\]\h\[$(term_reset)\]]$platform"'${hasjobs:+$(term_fg_blue)(\j jobs)$(term_reset)}'"\$ "
-    PS1="${line1}\n${line2}"
+    PS1="\n${line1}\n${line2}"
 
     export host_color
 }
