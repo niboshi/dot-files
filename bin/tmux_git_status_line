@@ -6,8 +6,10 @@ col_blue="#[bg=default,fg=blue]"
 col_clean="#[bg=default,fg=colour28]"
 col_git="#[bg=default,fg=gray]"
 col_bracket="#[bg=default,fg=black]"
-col_stash="#[bg=colour237,fg=white]"
+col_stash="#[bg=default,fg=colour237]"
 col_branch="#[bg=default,fg=colour166]"
+col_branch_ahead="#[bg=default,fg=blue]"
+col_branch_behind="#[bg=default,fg=red]"
 
 
 if [ $# -gt 0 ]; then
@@ -18,19 +20,30 @@ fi
 
 inside_git=$(git -C "$dir" rev-parse --is-inside-work-tree 2>/dev/null)
 if [ "$inside_git" == "true" ]; then
+    # Branch name
     branch=$(git -C "$dir" rev-parse --abbrev-ref HEAD)
-    stash_count=$(git -C "$dir" stash list | wc -l)
     echo -n "${col_bracket}[${col_git}git"
     echo -n " ${col_branch}$branch"
+
+    # Ahead/behind commit count
+    if leftright="$(git -C "$dir" rev-list --left-right --count @{u}...HEAD)"; then
+        ahead="$(echo "$leftright" | cut -f2)"
+        behind="$(echo "$leftright" | cut -f1)"
+        echo -en " ${col_branch_ahead}+$ahead${col_branch_behind}-$behind"
+    fi
     # clean or dirty?
-    if [ -z "$(git -C "$dir" status --porcelain --untracked-files=no)" ]; then
+    status="$(git -C "$dir" status --porcelain --untracked-files=no)"
+    if [ -z "$status" ]; then
         echo -n " ${col_clean}clean"
     else
-        echo -n " ${col_dirty}dirty"
+        staged="$(echo "$status" | cut -c1 | grep -v ' ' | wc -l)"
+        unstaged="$(echo "$status" | cut -c2 | grep -v ' ' | wc -l)"
+        echo -n " ${col_dirty}dirty($unstaged/$staged)"
     fi
     # stash
+    stash_count=$(git -C "$dir" stash list | wc -l)
     if [ $stash_count -gt 0 ]; then
-        echo -ne " ${col_stash}\u2261$stash_count"
+        echo -ne " ${col_stash}=$stash_count"
     fi
     # rebase in progress?
     if test -d "$(git -C "$dir" rev-parse --git-path rebase-merge)" || test -d "$(git -C "$dir" rev-parse --git-path rebase-apply)"; then
