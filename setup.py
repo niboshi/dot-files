@@ -18,6 +18,7 @@ FILE_LIST = [
 	(".gitconfig", None),
 	(".gitignore", None),
 	(".inputrc", None),
+	(".ssh_rc", ".ssh/rc"),
 	("bin", ".bindirs/dot-files"),
 ]
 
