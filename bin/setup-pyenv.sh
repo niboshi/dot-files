@@ -18,7 +18,7 @@ fi
 EOF
 
 cat <<EOF | bash
-pyenv install 3.7.2
+pyenv install 3.8.0
 EOF
 
 echo OK
