@@ -260,6 +260,16 @@ _niboshi_prompt_tmux() {
         fi
     fi
 }
+_niboshi_prompt_pyenv() {
+    if command -v pyenv >/dev/null; then
+        local version=$(pyenv version | sed -E 's/ \(.*\)$//')
+        local col_bracket="$(term_fg_rgb 1 1 1)"
+        local col_env="$(term_fg_rgb 5 1 0)"
+        echo -n "${col_bracket}(${col_env}"
+        echo -n "pyenv:$version"
+        echo -n "${col_bracket})"
+    fi
+}
 
 _set_prompt() {
     case "$HOSTNAME" in
@@ -295,7 +305,7 @@ _set_prompt() {
         platform=
     fi
 
-    local line1="$(term_fg_gray 10)\$(date \"+%m/%d %H:%M:%S\")$(term_reset) \[$(term_fg_red)\]:\$(_niboshi_prompt_envs)\$(_niboshi_prompt_tmux)\[$(term_fg_magenta)\]\[$(term_bold)\]\w\[$(term_reset)\]"
+    local line1="$(term_fg_gray 10)\$(date \"+%m/%d %H:%M:%S\")$(term_reset) \[$(term_fg_red)\]:\$(_niboshi_prompt_envs)\$(_niboshi_prompt_tmux)\$(_niboshi_prompt_pyenv)\[$(term_fg_magenta)\]\[$(term_bold)\]\w\[$(term_reset)\]"
     local line2="[${username_color_expr}\[$(term_bold)\]\u\[$(term_reset)\]@${host_color_expr}\[$(term_bold)\]\h\[$(term_reset)\]]$platform"'${hasjobs:+$(term_fg_blue)(\j jobs)$(term_reset)}'"\$ "
     PS1="\n${line1}\n${line2}"
 
