@@ -627,6 +627,7 @@ Called via the `after-load-functions' special hook."
   :commands projectile-global-mode
   :init
   (niboshi-set-key (kbd "C-c p R") 'projectile-regenerate-tags)
+  (niboshi-set-key (kbd "C-c p i") 'projectile-invalidate-cache)
   (setq projectile-indexing-method 'alien)
   (setq projectile-enable-caching t)
   (setq projectile-mode-line "(p)") ; Prevent lag on cursor move
