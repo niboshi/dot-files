@@ -371,6 +371,8 @@ Called via the `after-load-functions' special hook."
   (setq recentf-max-saved-items 1000)
   (setq recentf-max-menu-items 1000)
   (setq recentf-auto-cleanup 'never)
+  ;; Avoid elpa .el files to show up after updating packages.
+  (add-to-list 'recentf-exclude ".emacs.d/elpa/")
   ;; Start isearch automatically
   (add-hook
    'recentf-dialog-mode-hook
