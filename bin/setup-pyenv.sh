@@ -8,8 +8,9 @@ fi
 
 git -C "$PYENV_REPO_DIR" pull
 
-mkdir -p $HOME/.bashrc.d
-cat > $HOME/.bashrc.d/pyenv <<EOF
+temp_init_file="$(mktemp)"
+
+cat > "$temp_init_file" <<EOF
 export PYENV_ROOT="$PYENV_REPO_DIR"
 export PATH="\$PYENV_ROOT"/bin:"\$PATH"
 if command -v pyenv 1>/dev/null 2>&1; then
@@ -17,8 +18,14 @@ if command -v pyenv 1>/dev/null 2>&1; then
 fi
 EOF
 
-cat <<EOF | bash
-pyenv install 3.8.0
-EOF
+bash -eux -c '
+source "'"$temp_init_file"'"
+version=3.8.0
+pyenv install "$version"
+pyenv global "$version"
+'
+
+mkdir -p $HOME/.bash_profile.d
+cp "$temp_init_file" $HOME/.bash_profile.d/pyenv
 
 echo OK
