@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+ELLIPSIS_CHAR='.'
+
 pwd="$1"
 if [ "$pwd" == "$HOME" ]; then
     echo -n "~"
@@ -8,7 +10,7 @@ fi
 
 pwd="$(basename "$pwd")"
 if [ ${#pwd} -gt 15 ]; then
-   pwd=…"${pwd: -14}"
+   pwd="$ELLIPSIS_CHAR""${pwd: -14}"
 fi
 
 echo -n "$pwd"
