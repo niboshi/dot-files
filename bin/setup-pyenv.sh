@@ -2,12 +2,31 @@
 set -eux
 
 PYENV_REPO_DIR="$HOME/.pyenv"
+
+#-----------------------------------
+# Clone pyenv git repo
+#-----------------------------------
+
 if [ ! -d "$PYENV_REPO_DIR" ]; then
     git clone https://github.com/pyenv/pyenv.git "$PYENV_REPO_DIR"
 fi
 
 git -C "$PYENV_REPO_DIR" pull
 
+#-----------------------------------
+# Install Python build dependencies
+#-----------------------------------
+apt_pkgs=(
+    libbz2-dev
+    libreadline-dev
+    libssl-dev
+)
+
+sudo apt-get install "${apt_pkgs[@]}"
+
+#-----------------------------------
+# Install Python in pyenv
+#-----------------------------------
 temp_init_file="$(mktemp)"
 
 cat > "$temp_init_file" <<EOF
@@ -25,6 +44,9 @@ pyenv install "$version"
 pyenv global "$version"
 '
 
+#-----------------------------------
+# Postprocessing
+#-----------------------------------
 mkdir -p $HOME/.bash_profile.d
 cp "$temp_init_file" $HOME/.bash_profile.d/pyenv
 
