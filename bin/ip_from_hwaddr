@@ -1,0 +1,63 @@
+#!/usr/bin/env bash
+# Look up IP address given a MAC address.
+set -eu
+
+action="$1"
+if [ -z "$action" ]; then
+    echo "Action must be given." >&2
+    exit 1
+fi
+shift
+
+
+lookup() {
+    local hwaddr="$1"
+    local ipaddr="$(arp -a | grep "at $hwaddr" | sed -r 's/.*\((.*)\) at .*/\1/ ')"
+    echo "$ipaddr"
+}
+
+action_lookup() {
+    local hwaddr="${1:-}"
+    if [ -z "$hwaddr" ]; then
+        echo "MAC address must be given." >&2
+        return
+    fi
+    local ipaddr=$(lookup "$hwaddr")
+    if [ -z "$ipaddr" ]; then
+        echo "IP address not found." >&2
+        return
+    fi
+    echo "$ipaddr"
+}
+
+action_proxy() {
+    local hwaddr="${1:-}"
+    local port="${2:-}"
+    if [ -z "$hwaddr" ]; then
+        echo "MAC address must be given." >&2
+        return
+    fi
+    if [ -z "$port" ]; then
+        echo "Port must be given." >&2
+        return
+    fi
+    local ipaddr=$(lookup "$@")
+    if [ -z "$ipaddr" ]; then
+        echo "IP address not found." >&2
+        return
+    fi
+    exec nc -v "$ipaddr" "$port"
+}
+
+case "$action" in
+    lookup)
+        action_lookup "$@"
+        ;;
+    proxy)
+        action_proxy "$@"
+        ;;
+    *)
+        echo "Unknown action: $action" >&2
+        exit 1
+        ;;
+esac
