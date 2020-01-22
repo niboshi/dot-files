@@ -57,3 +57,9 @@ mkdir -p $HOME/.bash_profile.d
 cp "$temp_init_file" $HOME/.bash_profile.d/pyenv
 
 echo OK
+
+set +x
+echo "Type the following to make pyenv available immediately:"
+echo "=============================================="
+echo source $HOME/.bash_profile.d/pyenv
+echo "=============================================="
