@@ -22,7 +22,13 @@ apt_pkgs=(
     libssl-dev
 )
 
-sudo apt-get install "${apt_pkgs[@]}"
+num_not_installed="$(
+    dpkg-query --show --showformat='${db:Status-Status}\n' "${apt_pkgs[@]}" |
+        grep not-installed |
+        wc -l)"
+if [ 0 != "$num_not_installed" ]; then
+    sudo apt-get install "${apt_pkgs[@]}"
+fi
 
 #-----------------------------------
 # Install Python in pyenv
