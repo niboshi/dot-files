@@ -316,6 +316,14 @@ _set_prompt
 unset -f _set_prompt
 
 #---------------------------
+# utility
+#---------------------------
+niboshi-beep() {
+    echo -e '\a'
+}
+
+
+#---------------------------
 # bashrc.d
 #---------------------------
 if [ -d "$HOME/.bashrc.d" ]; then
