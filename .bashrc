@@ -316,14 +316,6 @@ _set_prompt
 unset -f _set_prompt
 
 #---------------------------
-# utility
-#---------------------------
-niboshi-beep() {
-    echo -e '\a'
-}
-
-
-#---------------------------
 # bashrc.d
 #---------------------------
 if [ -d "$HOME/.bashrc.d" ]; then
@@ -344,6 +336,8 @@ alias PAGER=less
 
 alias grep='/bin/grep --color=auto'
 alias utf8='nkf --utf8'
+
+alias _bp=niboshi-beep
 
 #---------------------------
 # LS_COLORS
