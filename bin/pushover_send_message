@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+set -eu
+
+error() {
+    local msg="$1"
+    echo "$msg" >&2
+    exit 1
+}
+
+message=("$@")
+token="${PUSHOVER_TOKEN:-}"
+user="${PUSHOVER_USER:-}"
+
+[ ! -z "$token" ] || error "Environment variable PUSHOVER_TOKEN is required"
+[ ! -z "$user" ] || error "Environment variable PUSHOVER_USER is required"
+cmd=(
+    curl
+    --form-string "token=${token}"
+    --form-string "user=${user}"
+    --form-string "message=${message[*]}"
+    https://api.pushover.net/1/messages.json
+)
+"${cmd[@]}"
