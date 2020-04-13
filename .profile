@@ -7,12 +7,6 @@ if [ ! -z "$DISPLAY" ]; then
     setxkbmap -layout us -option ctrl:nocaps
 fi
 
-if [ "$(uname -o)" == "Cygwin" ]; then
-    export NIBOSHI_IS_CYGWIN=1
-else
-    export NIBOSHI_IS_CYGWIN=0
-fi
-
 # Enable touchpanel in Firefox
 export MOZ_USE_XINPUT2=1
 

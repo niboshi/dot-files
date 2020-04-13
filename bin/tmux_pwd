@@ -14,4 +14,3 @@ if [ ${#pwd} -gt 15 ]; then
 fi
 
 echo -n "$pwd"
-

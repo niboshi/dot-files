@@ -273,21 +273,13 @@ _niboshi_prompt_pyenv() {
 
 _prompt_command() {
     local host_color="${NIBOSHI_HOST_COLOR:=white}"
-
     local host_color_expr='\[$(term_fg_'${host_color}')\]'
     local username_color_expr='\[$(term_fg_gray 13)\]'
 
     PROMPT_COMMAND='hasjobs=$(jobs -p)'
 
-    local platform
-    if [ 1 == "$NIBOSHI_IS_CYGWIN" ]; then
-        platform="$(term_fg_yellow)(cygwin)$(term_reset)"
-    else
-        platform=
-    fi
-
     local line1="$(term_fg_gray 10)\$(date \"+%m/%d %H:%M:%S\")$(term_reset) \[$(term_fg_red)\]:\$(_niboshi_prompt_envs)\$(_niboshi_prompt_tmux)\$(_niboshi_prompt_pyenv)\[$(term_fg_magenta)\]\[$(term_bold)\]\w\[$(term_reset)\]"
-    local line2="[${username_color_expr}\[$(term_bold)\]\u\[$(term_reset)\]@${host_color_expr}\[$(term_bold)\]\h\[$(term_reset)\]]$platform"'${hasjobs:+$(term_fg_blue)(\j jobs)$(term_reset)}'"\$ "
+    local line2="[${username_color_expr}\[$(term_bold)\]\u\[$(term_reset)\]@${host_color_expr}\[$(term_bold)\]\h\[$(term_reset)\]]"'${hasjobs:+$(term_fg_blue)(\j jobs)$(term_reset)}'"\$ "
     PS1="\n${line1}\n${line2}"
 }
 
