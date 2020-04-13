@@ -271,27 +271,8 @@ _niboshi_prompt_pyenv() {
     fi
 }
 
-_set_prompt() {
-    case "$HOSTNAME" in
-        amane)
-            host_color=green
-            ;;
-        natsumi)
-            host_color=cyan
-            ;;
-        coyote)
-            host_color=blue
-            ;;
-        surface-pro2)
-            host_color=cyan
-            ;;
-        pi)
-            host_color=red
-            ;;
-        *)
-            host_color=white
-            ;;
-    esac
+_prompt_command() {
+    local host_color="${NIBOSHI_HOST_COLOR:=white}"
 
     local host_color_expr='\[$(term_fg_'${host_color}')\]'
     local username_color_expr='\[$(term_fg_gray 13)\]'
@@ -308,12 +289,9 @@ _set_prompt() {
     local line1="$(term_fg_gray 10)\$(date \"+%m/%d %H:%M:%S\")$(term_reset) \[$(term_fg_red)\]:\$(_niboshi_prompt_envs)\$(_niboshi_prompt_tmux)\$(_niboshi_prompt_pyenv)\[$(term_fg_magenta)\]\[$(term_bold)\]\w\[$(term_reset)\]"
     local line2="[${username_color_expr}\[$(term_bold)\]\u\[$(term_reset)\]@${host_color_expr}\[$(term_bold)\]\h\[$(term_reset)\]]$platform"'${hasjobs:+$(term_fg_blue)(\j jobs)$(term_reset)}'"\$ "
     PS1="\n${line1}\n${line2}"
-
-    export host_color
 }
 
-_set_prompt
-unset -f _set_prompt
+PROMPT_COMMAND=_prompt_command
 
 #---------------------------
 # bashrc.d
