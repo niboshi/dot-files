@@ -45,7 +45,7 @@ EOF
 
 bash -eux -c '
 source "'"$temp_init_file"'"
-version=3.8.0
+version=miniconda3-4.7.12
 pyenv install "$version"
 pyenv global "$version"
 '
