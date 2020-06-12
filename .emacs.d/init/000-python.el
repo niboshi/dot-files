@@ -30,13 +30,18 @@
 ;;-----------------------
 ;; python-mode-hook
 ;;-----------------------
+(defvar niboshi-missing-flake8-message-shown nil)
 (add-hook 'python-mode-hook
           (lambda ()
             (setq indent-tabs-mode nil)
             (setq tab-width 4)
             (setq python-indent-offset 4)
-            (setq electric-indent-mode nil)))
-
+            (setq electric-indent-mode nil)
+            (unless niboshi-missing-flake8-message-shown
+              (unless (locate-file "flake8" exec-path)
+                (message-box "Warning: flake8 is not available!!")
+                (setq niboshi-missing-flake8-message-shown t)
+                ))))
 
 ;;-----------------------
 ;; Misc
