@@ -10,6 +10,7 @@
   (niboshi-set-key (kbd "C-c m l") 'magit-log-buffer-file)
   (niboshi-set-key (kbd "C-c m L") 'magit-log-current)
   (niboshi-set-key (kbd "C-c m b") 'magit-blame)
+  (setq magit-save-repository-buffers nil)
   :config
   (let ((background-highlight "gray10"))
     (set-face-attribute 'magit-diff-context-highlight nil :foreground nil       :background background-highlight)
