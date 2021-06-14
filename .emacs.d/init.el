@@ -573,6 +573,10 @@ Called via the `after-load-functions' special hook."
   (add-hook 'prog-mode-hook
             (lambda()
               (whitespace-mode t)))
+  ;; .ini .conf
+  (add-hook 'conf-mode-hook
+            (lambda()
+              (whitespace-mode t)))
   :config
   (setq whitespace-style '(empty face tabs newline tab-mark newline-mark trailing))
   (if (display-graphic-p)
